@@ -36,7 +36,7 @@ Manually installing
 ## How to compile
 Install [emcc](https://emscripten.org)
 
-Clone [this plugin repo](notlibrary/obsidian-adamantine-pick) 
+Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick) 
 	
 	git clone https://github.com/notlibrary/obsidian-adamantine-pick
 	
@@ -59,5 +59,5 @@ To debug in loop:
 [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 
 ## Note
-Experimental bloated ugly wrapper but possibility run it entirely in 
+Experimental bloated ugly wrapper but possibility to run it entirely in 
 js enviroment outweights security drawbacks
