@@ -1,5 +1,5 @@
 {
-	"id": "obsidian-adamantine-pick",
+	"id": "adamantine-pick",
 	"name": "Adamantine Pick",
 	"version": "0.4.2",
 	"minAppVersion": "0.4.2",
@@ -7,5 +7,5 @@
 	"author": "Urist McMiner",
 	"authorUrl": "https://github.com/notlibrary",
 	"fundingUrl": "https://github.com/notlibrary",
-	"isDesktopOnly": true
+	"isDesktopOnly": false
 }
