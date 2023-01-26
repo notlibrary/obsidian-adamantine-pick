@@ -1,6 +1,6 @@
 # Obsidian Adamantine Pick
 
-Embeddable [Pikchr](https://pikchr.org) diagrams renderer for
+Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
 [Obsidian](https://obsidian.md).  Outputs end-user diagram to viewable SVG inside
 Obsidian note out of the box client side without need to compile install Pikchr
 itself
@@ -33,11 +33,6 @@ Manually installing
 - Copy over `main.js`, `manifest.json`, `styles.css` to your vault 
     `VaultFolder/.obsidian/plugins/obsidian-adamantine-pick/`
 
-
-## Pikchr Documentation
-
-[Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
-
 ## How to compile
 Install [emcc](https://emscripten.org)
 
@@ -54,6 +49,12 @@ Clone [this plugin repo](notlibrary/obsidian-adamantine-pick)
 To debug in loop: 
 
 	npm run dev
+
+## Pikchr Official Documentation References
+
+[Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
+[Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
+[Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 
 ## Note
 Experimental bloated ugly wrapper but possibility run it entirely in 
