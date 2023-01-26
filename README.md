@@ -7,7 +7,7 @@ itself
 
 ## Demo
 
-![demo](https://user-images.githubusercontent.com/%name%/.gif)
+![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
 
 ``` pikchr 
 	
@@ -44,6 +44,7 @@ Manual(https://pikchr.org/home/doc/trunk/doc/userman.md)
 
     emsdk activate
     npm install
+
     npm run pikchr
     npm run build 
 
