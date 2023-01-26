@@ -36,17 +36,24 @@ Manually installing
 
 ## Pikchr Documentation
 
-Manual(https://pikchr.org/home/doc/trunk/doc/userman.md)
+[Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 
 ## How to compile
-    Install emcc
-    Clone this repo
+Install [emcc](https://emscripten.org)
 
+Clone [this plugin repo](notlibrary/obsidian-adamantine-pick) 
+	
+	git clone https://github.com/notlibrary/obsidian-adamantine-pick
+	
     emsdk activate
     npm install
 
     npm run pikchr
     npm run build 
+ 	
+To debug in loop: 
+
+	npm run dev
 
 ## Note
 Experimental bloated ugly wrapper but possibility run it entirely in 
