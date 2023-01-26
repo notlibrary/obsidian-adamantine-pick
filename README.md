@@ -53,7 +53,9 @@ To debug in loop:
 ## Pikchr Official Documentation References
 
 [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
+
 [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
+
 [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 
 ## Note
