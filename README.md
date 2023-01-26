@@ -36,8 +36,10 @@ Manually installing
 ## How to compile
 Install [emcc](https://emscripten.org)
 
-Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick) 
+Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick)
+to your Vault
 	
+	cd VaultFolder/.obsidian/plugins
 	git clone https://github.com/notlibrary/obsidian-adamantine-pick
 	
     emsdk activate
@@ -60,4 +62,4 @@ To debug in loop:
 
 ## Note
 Experimental bloated ugly wrapper but possibility to run it entirely in 
-js enviroment outweights security drawbacks
+js environment outweights security drawbacks
