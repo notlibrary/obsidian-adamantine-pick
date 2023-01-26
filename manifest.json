@@ -5,7 +5,7 @@
 	"minAppVersion": "0.4.2",
 	"description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
 	"author": "Urist McMiner",
-	"authorUrl": "https://github.com/notlibrary/obsidian-adamantine-pick",
-	"fundingUrl": "https://github.com/notlibrary/obsidian-adamantine-pick",
+	"authorUrl": "https://github.com/notlibrary",
+	"fundingUrl": "https://github.com/notlibrary",
 	"isDesktopOnly": true
 }
