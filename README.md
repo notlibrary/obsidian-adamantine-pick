@@ -1,4 +1,4 @@
-# Obsidian Adamantine Pick
+# Adamantine Pick
 
 Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
 [Obsidian](https://obsidian.md).  Outputs end-user diagram to viewable SVG inside
