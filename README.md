@@ -1,7 +1,7 @@
 # Obsidian Adamantine Pick
 
-Embeddable Pikchr(https://pikchr.org) diagrams renderer for
-Obsidian(https://obsidian.md).  Outputs end-user diagram to viewable SVG inside
+Embeddable [Pikchr](https://pikchr.org) diagrams renderer for
+[Obsidian](https://obsidian.md).  Outputs end-user diagram to viewable SVG inside
 Obsidian note out of the box client side without need to compile install Pikchr
 itself
 
@@ -19,7 +19,7 @@ itself
 
 ## Installation
 
-Because pikchr.c precompiled with emcc installing this plugin allows user to
+Because `pikchr.c` precompiled with emcc installing this plugin allows user to
 markup diagrams directly from client without installing compiling pikchr
 itself.  This makes plugin embeddable usable "out of the box" "client-side"
 
