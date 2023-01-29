@@ -1,6 +1,12 @@
 import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from "obsidian";
 const factory = require("./pikchr.js");
 
+declare module "obsidian" {
+	interface Vault {
+		setConfig: (config: string, newValue: string) => void;
+		getConfig: (config: string) => string;
+	}
+}
 
 export interface AdamantinePickSettings {
 	block_identify: string[];
@@ -27,7 +33,7 @@ export class AdamantinePickProcessor implements Processor {
 			factory().then((instance) => {
 			
 				let pikchr = instance.cwrap('pikchr', 'string', ['string','string','number']);
-				const encodedDiagram = pikchr(source,"adamantine",2);
+				const encodedDiagram = pikchr(source,"adamantine",this.dark_mode);
 				
 				const parser = new DOMParser();
 				const svg = parser.parseFromString(encodedDiagram, "image/svg+xml");
@@ -41,7 +47,11 @@ export class AdamantinePickProcessor implements Processor {
 			
 			});
 	}
-
+	dark_mode: number;
+	constructor(mFlags: number) {
+		this.dark_mode = mFlags;
+	}
+	
 }
 
 export default class AdamantinePickPlugin extends Plugin {
@@ -51,7 +61,13 @@ export default class AdamantinePickPlugin extends Plugin {
 		console.log('loading adamantine pick plugin')
 		await this.loadSettings();
 		
-		const processor = new AdamantinePickProcessor();
+		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
+		let dark_mode_flag = 0x0002;
+		
+		if (isLightMode) { dark_mode_flag = 0x0000; }
+		
+		const processor = new AdamantinePickProcessor(dark_mode_flag);
+		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
 
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
