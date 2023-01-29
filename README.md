@@ -1,7 +1,7 @@
 # Adamantine Pick
 
 Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
-[Obsidian](https://obsidian.md).  Outputs end-user diagram to viewable SVG inside
+[Obsidian](https://obsidian.md). Outputs end-user diagram to viewable SVG inside
 Obsidian note out of the box client side offline without need to compile install 
 Pikchr itself 
 
@@ -9,12 +9,10 @@ Pikchr itself
 
 ![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
 
-``` pikchr 
-	
-	box "What a we going to do today?" fit 
-	arrow
-	box "The same thing we do everyday" "To take over the World!" fit
-	
+```pikchr
+box "What are we going to do today?" fit 
+arrow
+box "The same thing we do everyday" "To take over the World!" fit
 ```
 
 ## Installation
@@ -24,6 +22,7 @@ markup diagrams directly from client without installing compiling pikchr
 itself.  This makes plugin embeddable usable "out of the box" "client-side"
 "offline"
 
+With user interface
 - Ensure Safe mode is **off** 
 - Settings > Community plugins > Turn On Community Plugis
 - Click Browse community plugins
@@ -32,45 +31,54 @@ itself.  This makes plugin embeddable usable "out of the box" "client-side"
 
 Manually installing
 - Copy over `main.js`, `manifest.json`, `styles.css` to your vault 
-    `VaultFolder/.obsidian/plugins/obsidian-adamantine-pick/`
+`VaultFolder/.obsidian/plugins/obsidian-adamantine-pick/`
 
-## How to compile plugin
+Test installing
+- Paste this plugin repo link into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
-Install [emcc](https://emscripten.org)
+## How to build plugin
+
+Install and activate [emcc](https://emscripten.org)
+
+```
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install latest
+emsdk activate
+```	
 
 Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick)
 to your Vault
-	
-	cd VaultFolder/.obsidian/plugins
-	git clone https://github.com/notlibrary/obsidian-adamantine-pick
 
-Install node packages activate emcc
+```
+cd VaultFolder/.obsidian/plugins
+git clone https://github.com/notlibrary/obsidian-adamantine-pick
+```
+
+Install node.js packages
 	
-    emsdk activate
-    npm install
+`npm install`
 
 Build `pikchr.js` from `pikchr.c`
 	
-    npm run pikchr
+`npm run pikchr`
 	
-The one-liner is this
+The compile one-liner is this
 
-	emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js
+`emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js`
 
-Build wrapper
+Build wrapper and minify `main.js`
 
-    npm run build 
+`npm run build` 
  	
 To debug wrapper in loop
 
-	npm run dev
+`npm run dev`
 
 ## Pikchr Official Documentation References
 
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
-
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
-
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 
 ## Note
