@@ -2,14 +2,14 @@ import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting, M
 const factory = require("./pikchr.js");
 
 
-interface AdamantinePickSettings {
+export interface AdamantinePickSettings {
 	block_identify: string[];
 	auto_render: boolean;
 	show_toolbar: boolean;
 	
 }
 
-const DEFAULT_SETTINGS: AdamantinePickSettings = {
+export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	block_identify: [ 'pikchr', 'pick' ],
 	auto_render: false,
 	show_toolbar: true,
@@ -27,9 +27,6 @@ export class AdamantinePickProcessor implements Processor {
 			factory().then((instance) => {
 			
 				let pikchr = instance.cwrap('pikchr', 'string', ['string','string','number']);
-			
-	  
-				
 				const encodedDiagram = pikchr(source,"adamantine",2);
 				
 				const parser = new DOMParser();
@@ -48,9 +45,9 @@ export class AdamantinePickProcessor implements Processor {
 }
 
 export default class AdamantinePickPlugin extends Plugin {
-	public settings: AdamantinePickSettings;
+	settings: AdamantinePickSettings;
 
-	public async onload(): Promise<void> {
+	async onload(): Promise<void> {
 		console.log('loading adamantine pick plugin')
 		await this.loadSettings();
 		
@@ -61,22 +58,22 @@ export default class AdamantinePickPlugin extends Plugin {
 
 	}
 
-	public onunload(): void {
+	async onunload(): Promise<void> {
 		console.log('unloading adamantine pick plugin')
 		
 	}
 
-	public async loadSettings() {
+	async loadSettings(): Promise<void>  {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
-	public async saveSettings() {
+	async saveSettings(): Promise<void>  {
 		await this.saveData(this.settings);
 	}
 }
 
 
-class AdamantinePickSettingsTab extends PluginSettingTab {
+export class AdamantinePickSettingsTab extends PluginSettingTab {
 	plugin: AdamantinePickPlugin;
 
 	constructor(app: App, plugin: AdamantinePickPlugin) {
