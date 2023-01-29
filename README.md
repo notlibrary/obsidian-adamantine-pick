@@ -57,23 +57,33 @@ git clone https://github.com/notlibrary/obsidian-adamantine-pick
 
 Install node.js packages
 	
-`npm install`
+```
+npm install
+```
 
 Build `pikchr.js` from `pikchr.c`
 	
-`npm run pikchr`
+```
+npm run pikchr
+```
 	
 The compile one-liner is this
 
-`emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js`
+```
+emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js
+```
 
 Build wrapper and minify `main.js`
 
-`npm run build` 
+```
+npm run build
+``` 
  	
 To debug wrapper in loop
 
-`npm run dev`
+```
+npm run dev
+```
 
 ## Pikchr Official Documentation References
 
