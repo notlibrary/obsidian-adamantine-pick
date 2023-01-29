@@ -37,6 +37,7 @@ esbuild.build({
 	target: 'es2018',
 	logLevel: "info",
 	sourcemap: prod ? false : 'inline',
+	minify: true,
 	treeShaking: true,
 	outfile: 'main.js',
 }).catch(() => process.exit(1));
