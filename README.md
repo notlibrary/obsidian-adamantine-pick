@@ -30,8 +30,8 @@ With user interface
 - Click Install
 
 Manually installing
-- Copy over `main.js`, `manifest.json`, `styles.css` to your vault 
-`VaultFolder/.obsidian/plugins/obsidian-adamantine-pick/`
+- Copy over `main.js`, `manifest.json`, `styles.css` to your Vault 
+`VaultFolder/.obsidian/plugins/adamantine-pick/`
 
 Test installing
 - Paste this plugin repo link into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
@@ -48,11 +48,11 @@ emsdk activate
 ```	
 
 Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick)
-to your Vault
+to your Vault into `VaultFolder/.obsidian/plugins/adamantine-pick` folder
 
 ```
 cd VaultFolder/.obsidian/plugins
-git clone https://github.com/notlibrary/obsidian-adamantine-pick
+git clone https://github.com/notlibrary/obsidian-adamantine-pick adamantine-pick
 ```
 
 Install node.js packages
@@ -73,7 +73,7 @@ The compile one-liner is this
 emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js
 ```
 
-Build wrapper and minify `main.js`
+Build(and minify) `main.js` from `main.ts` wrapper
 
 ```
 npm run build
