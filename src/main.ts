@@ -38,10 +38,10 @@ export class AdamantinePickProcessor implements Processor {
 						
 			
 			factory().then((instance) => {
-			
+				var t0 = Date.now();
 				let pikchr = instance.cwrap('pikchr', 'string', ['string','string','number']);
 				const encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
-				
+				let length = encodedDiagram.length;
 				const parser = new DOMParser();
 				const svg = parser.parseFromString(encodedDiagram, "image/svg+xml");
 
@@ -50,15 +50,36 @@ export class AdamantinePickProcessor implements Processor {
 					const link = links[i];
 					link.addClass("internal-link");
 				}
-				el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
-			
+				
+				if (this.render_type === 1) {
+					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+				}
+				else if(this.render_type === 2) {
+					el.createEl("div",{ text: encodedDiagram });
+				}
+				else {
+					console.log('dummy encoder');
+				}
+				
+				let dimensions = [0,0];
+				let height = dimensions[0];
+				let width = dimensions[1];
+				if (this.report) {
+					let deltat = Date.now() - t0;
+					let status_report = "Adamantine height(px):" + height + " width(px):" + width + " length(byte):" + length + " time(ms): " + deltat; 
+					el.createEl("div",{ text: status_report });
+				}
 			});
 	}
+	render_type: number;
 	dark_mode: number;
 	dom_mark: string;
-	constructor(mFlags: number, dom_mark: string) {
+	report: boolean;
+	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean) {
+		this.render_type = render_type;
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
+		this.report = report;
 	}
 	
 }
@@ -75,9 +96,9 @@ export default class AdamantinePickPlugin extends Plugin {
 		let dark_mode_flag = 0x0002;
 		let dom_mark = this.settings.output_dom_mark;
 		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
-		
-		const processor = new AdamantinePickProcessor(dark_mode_flag, dom_mark);
-		
+		let report = this.settings.output_diagram_stats;
+		let render_type = this.settings.encoder_type;
+		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report);
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
 
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
@@ -122,10 +143,16 @@ export default class AdamantinePickPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 	
-	output_builtin_diagram(index: number)
+	private output_builtin_diagram(index: number)
 	{
 		
-		var src = "``` pikchr\n";
+		let samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
+		
+		var src = "# " + samples_list[index - 1] + "\n";
+		src += "Sample [Pikchr](https://pikchr.org) diagram in [Obsidian](https://obsidian.md) note by [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin \n";
+		src += "Demo sample name: " +  samples_list[index - 1] + "\n";
+		
+		src += "``` pikchr\n";
 		switch (index) {
 			case 1:
 			src += this.sample_cheat_sheet();
@@ -144,7 +171,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		return src;
 	}
 	
-	sample_triforce()
+	private sample_triforce()
 	{
 		var src = 
 		`
@@ -163,7 +190,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		return src;
 	}
 	 
-	sample_palindrome() 
+	private sample_palindrome() 
 	{
 		const palindrome = [
 		"Dennis","Nell","Edna","Leon","Nedra","Anita","Rolf","Nora",
@@ -196,7 +223,7 @@ export default class AdamantinePickPlugin extends Plugin {
 
 	}
 	
-	sample_cheat_sheet()
+	private sample_cheat_sheet()
 	{
 		var src = 
 		`

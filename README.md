@@ -3,7 +3,7 @@
 Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
 [Obsidian](https://obsidian.md). Outputs end-user diagram to viewable SVG inside
 Obsidian note out of the box client side offline without need to compile install 
-Pikchr itself 
+Pikchr itself
 
 ## Demo
 
@@ -100,3 +100,8 @@ js environment outweights security drawbacks
 intended for integrator usage 
 - Do not use it for CAD/CAM, presentations, graphs charts drawings
 - Acknowledge original Pikchr developers
+
+Deflated binary size with wrap ~75-100KB(depends on compr algo)
+So it fits in desktop L2 cache `arrow <-> from A to B chop` together 
+with encoded diagram and even leaves some more free space for others
+
