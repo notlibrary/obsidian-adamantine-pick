@@ -1,3 +1,6 @@
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/notlibrary/obsidian-adamantine-pick?style=for-the-badge&sort=semver)
+![GitHub all releases](https://img.shields.io/github/downloads/notlibrary/obsidian-adamantine-pick/total?style=for-the-badge)
+
 # Adamantine Pick
 
 Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
