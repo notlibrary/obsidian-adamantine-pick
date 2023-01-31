@@ -10,7 +10,7 @@ Pikchr itself
 ![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
 
 ```pikchr
-box "What are we going to do today?" fit 
+box "What are we going to do today" "Second Brain?" fit 
 arrow
 box "The same thing we do everyday" "To take over the World!" fit
 ```
