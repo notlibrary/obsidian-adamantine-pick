@@ -41,14 +41,14 @@ Test installing
 
 ## How to build plugin
 
-Install and activate [emcc](https://emscripten.org)
+Install and activate [emcc](https://emscripten.org) using emsdk
 
 ```
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
 ./emsdk install latest
 emsdk activate
-```	
+```
 
 Clone [this plugin repo](https://github.com/notlibrary/obsidian-adamantine-pick)
 to your Vault into `VaultFolder/.obsidian/plugins/adamantine-pick` folder
@@ -80,7 +80,7 @@ Build(and minify) `main.js` from `main.ts` wrapper
 
 ```
 npm run build
-``` 
+```
  	
 To debug wrapper in loop
 
