@@ -64,7 +64,7 @@ Install node.js packages
 npm install
 ```
 
-Build `pikchr.js` from `pikchr.c`
+Build `pick.js` from `pick.c` wrap to `pikchr.c`
 	
 ```
 npm run pikchr
