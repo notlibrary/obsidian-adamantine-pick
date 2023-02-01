@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from "obsidian";
-const factory = require("./pikchr.js");
+const factory = require("./pick.js");
 
 declare module "obsidian" {
 	interface Vault {
@@ -39,8 +39,12 @@ export class AdamantinePickProcessor implements Processor {
 			
 			factory().then((instance) => {
 				var t0 = Date.now();
-				let pikchr = instance.cwrap('pikchr', 'string', ['string','string','number']);
+				let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
+				let get_height = instance.cwrap('pick_height', 'number', ['number']);
+				let get_width = instance.cwrap('pick_width', 'number', ['number']);
 				const encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
+				const height = get_height(0);
+				const width = get_width(0);
 				let length = encodedDiagram.length;
 				const parser = new DOMParser();
 				const svg = parser.parseFromString(encodedDiagram, "image/svg+xml");
@@ -61,9 +65,7 @@ export class AdamantinePickProcessor implements Processor {
 					console.log('dummy encoder');
 				}
 				
-				let dimensions = [0,0];
-				let height = dimensions[0];
-				let width = dimensions[1];
+	
 				if (this.report) {
 					let deltat = Date.now() - t0;
 					let status_report = "Adamantine height(px):" + height + " width(px):" + width + " length(byte):" + length + " time(ms): " + deltat; 

@@ -7,7 +7,7 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"pikchr": "emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js"
+		"pikchr": "emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js"
 	},
 	"keywords": [
 		"pikchr",

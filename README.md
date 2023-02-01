@@ -1,3 +1,5 @@
+![GitHub all releases](https://img.shields.io/github/downloads/notlibrary/obsidian-adamantine-pick/total)
+
 # Adamantine Pick
 
 Embeddable [Pikchr](https://pikchr.org) diagrams renderer plugin for
@@ -61,7 +63,7 @@ Install node.js packages
 npm install
 ```
 
-Build `pikchr.js` from `pikchr.c`
+Build `pick.js` from `pick.c` wrapper of `pikchr.c` 
 	
 ```
 npm run pikchr
@@ -70,7 +72,7 @@ npm run pikchr
 The compile one-liner is this
 
 ```
-emcc src/pikchr.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pikchr -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pikchr.js
+emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
 ```
 
 Build(and minify) `main.js` from `main.ts` wrapper
@@ -104,4 +106,3 @@ intended for integrator usage
 Deflated binary size with wrap ~75-100KB(depends on compr algo)
 So it fits in desktop L2 cache `arrow <-> from A to B chop` together 
 with encoded diagram and even leaves some more free space for others
-
