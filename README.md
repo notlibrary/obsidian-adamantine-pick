@@ -107,3 +107,13 @@ intended for integrator usage
 Deflated binary size with wrap ~75-100KB(depends on compr algo)
 So it fits in desktop L2 cache `arrow <-> from A to B chop` together 
 with encoded diagram and even leaves some more free space for others
+
+*tl, dr:* for those who read it to the end "BanKan" diagram
+
+```pikchr
+box "DONE"; box "IN" ; box "DO" ; down; move from first box.n
+
+DONE: [ box "Shit" ] ; right 
+IN: box "Random"
+DO: box "Task 1" "Task 2" "Task 3"
+```
