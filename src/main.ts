@@ -1,5 +1,6 @@
-import { App, Editor, MarkdownView, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from "obsidian";
-const factory = require("./pick.js");
+import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from "obsidian";
+import factory = require("./pick.js");
+
 
 declare module "obsidian" {
 	interface Vault {
@@ -60,22 +61,22 @@ export class AdamantinePickProcessor implements Processor {
 		factory().then(
 			async (instance) => {
 				this.timestamp = Date.now();
-				let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
-				let get_height = instance.cwrap('pick_height', 'number', ['number']);
-				let get_width = instance.cwrap('pick_width', 'number', ['number']);
+				const pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
+				const get_height = instance.cwrap('pick_height', 'number', ['number']);
+				const get_width = instance.cwrap('pick_width', 'number', ['number']);		
+				
 				this.encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
 				await this.diagram_handler(this.encodedDiagram, el, ctx);	
 			}
-		);
-		
+		);		
 	}
 	
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
-		let length = source.length;	
+		const length = source.length;	
 		const parser = new DOMParser();
-		let svg = parser.parseFromString(source, "image/svg+xml");
+		const svg = parser.parseFromString(source, "image/svg+xml");
 		const links = svg.getElementsByTagName("a");
 		for (let i = 0; i < links.length; i++) {
 			const link = links[i];
@@ -93,8 +94,8 @@ export class AdamantinePickProcessor implements Processor {
 		}
 		
 		if (this.report) {
-			let deltat = Date.now() - this.timestamp;
-			let status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
+			const deltat = Date.now() - this.timestamp;
+			const status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
 			el.createEl("div",{ text: status_report });
 		}
 	}
@@ -104,7 +105,7 @@ export class AdamantinePickProcessor implements Processor {
 
 export default class AdamantinePickPlugin extends Plugin {
 	settings: AdamantinePickSettings;
-	total_builtin_samples: number = 4;
+	total_builtin_samples = 4;
 	
 	async onload(): Promise<void> {
 		console.log('loading adamantine pick plugin')
@@ -112,10 +113,10 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
 		let dark_mode_flag = 0x0002;
-		let dom_mark = this.settings.output_dom_mark;
+		const dom_mark = this.settings.output_dom_mark;
 		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
-		let report = this.settings.output_diagram_stats;
-		let render_type = this.settings.encoder_type;
+		const report = this.settings.output_diagram_stats;
+		const render_type = this.settings.encoder_type;
 		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report);
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
 
@@ -133,12 +134,12 @@ export default class AdamantinePickPlugin extends Plugin {
 				console.log(error.toString());
 			}
 			
-			let samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
+			const samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
 			let arr_in = 0;
 			arr_in = this.settings.sample_to_render;
-			let filename = dir + "/" + samples_list[arr_in - 1] + ".md";
+			const filename = dir + "/" + samples_list[arr_in - 1] + ".md";
 			
-			let sample_content = this.output_builtin_diagram(arr_in);
+			const sample_content = this.output_builtin_diagram(arr_in);
 			try {
 				await this.app.vault.create(filename, sample_content);
 				this.settings.sample_to_render = 4;
@@ -167,9 +168,9 @@ export default class AdamantinePickPlugin extends Plugin {
 	private output_builtin_diagram(index: number)
 	{
 		
-		let samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
+		const samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
 		
-		var src = "# " + samples_list[index - 1] + "\n";
+		let src = "# " + samples_list[index - 1] + "\n";
 		src += "Sample [Pikchr](https://pikchr.org) diagram in [Obsidian](https://obsidian.md) note by [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin \n";
 		src += "Demo sample name: " +  samples_list[index - 1] + "\n";
 		
@@ -194,7 +195,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	
 	private sample_triforce()
 	{
-		var src = 
+		const src = 
 		`
 		color = black
 		TRIFORCE: [
@@ -210,8 +211,8 @@ export default class AdamantinePickPlugin extends Plugin {
 		`
 		return src;
 	}
-	 
-	private sample_palindrome() 
+
+	private sample_palindrome()
 	{
 		const palindrome = [
 		"Dennis","Nell","Edna","Leon","Nedra","Anita","Rolf","Nora",
@@ -223,9 +224,9 @@ export default class AdamantinePickPlugin extends Plugin {
 		"Ada","Ned","Dee","Rena","Joel","Lora","Cecil","Aaron",
 		"Flora","Tina","Arden","Noel","and","Ellen","sinned"
 		]
-		let total = 63;
-		let width = 4;
-		var src = "";
+		const total = 63;
+		const width = 4;
+		let src = "";
 		let parity = 0;
 		
 		for (let i = 0; i < total; i++) {
@@ -246,7 +247,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	
 	private sample_cheat_sheet()
 	{
-		var src = 
+		const src = 
 		`
 		CHEAT_SHEET: [
 		A: box "box" "radius 5px" radius 5px
