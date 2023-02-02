@@ -58,13 +58,13 @@ cd VaultFolder/.obsidian/plugins
 git clone https://github.com/notlibrary/obsidian-adamantine-pick adamantine-pick
 ```
 
-Install node.js packages
+Install node.js dev packages
 	
 ```
 npm install
 ```
 
-Build `pick.js` from `pick.c` wrap to `pikchr.c`
+Build `pick.js` from `pick.c` wrap to `pikchr.c` artifact
 	
 ```
 npm run pikchr
@@ -93,6 +93,7 @@ npm run dev
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
+- [Source Artifact](https://pikchr.org/home/artifact/02f23c6c39)
 
 ## Note
 

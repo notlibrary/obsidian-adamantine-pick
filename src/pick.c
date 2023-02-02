@@ -7,8 +7,12 @@
 	factory().then((instance) => {
 		let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
 		let pick_width = instance.cwrap('pick_height', 'number', ['number']);
-		let pick_height = instance.cwrap('pick_width', 'string', ['number']);
+		let pick_height = instance.cwrap('pick_width', 'number', ['number']);
 	}
+	Because passing pointers from js to C is complicated 
+	it passes pointer to inner static variable to pikchr
+	and cwrap method to get/set it from javascript/typescript
+	[typescript/javascript method] <-[ pick ]-> [pointer pikchr]
 	
 */
 
