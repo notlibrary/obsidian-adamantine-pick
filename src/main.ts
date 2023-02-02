@@ -16,6 +16,7 @@ export interface AdamantinePickSettings {
 	bleach_diagram: boolean;
 	output_diagram_stats: boolean;
 	samples_list: string[];
+	samples_dir: string;
 }
 
 export const DEFAULT_SETTINGS: AdamantinePickSettings = {
@@ -25,7 +26,8 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	sample_to_render: 4,
 	bleach_diagram: false,
 	output_diagram_stats: false,
-	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"]
+	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"],
+	samples_dir: "sample-diagrams"
 }
 
 export interface Processor {
@@ -34,61 +36,75 @@ export interface Processor {
 }
 
 export class AdamantinePickProcessor implements Processor {
-    svg = async(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-						
-			
-			factory().then((instance) => {
-				var t0 = Date.now();
-				let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
-				let get_height = instance.cwrap('pick_height', 'number', ['number']);
-				let get_width = instance.cwrap('pick_width', 'number', ['number']);
-				const encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
-				const height = get_height(0);
-				const width = get_width(0);
-				let length = encodedDiagram.length;
-				const parser = new DOMParser();
-				const svg = parser.parseFromString(encodedDiagram, "image/svg+xml");
-
-				const links = svg.getElementsByTagName("a");
-				for (let i = 0; i < links.length; i++) {
-					const link = links[i];
-					link.addClass("internal-link");
-				}
-				
-				if (this.render_type === 1) {
-					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
-				}
-				else if(this.render_type === 2) {
-					el.createEl("div",{ text: encodedDiagram });
-				}
-				else {
-					console.log('dummy encoder');
-				}
-				
-	
-				if (this.report) {
-					let deltat = Date.now() - t0;
-					let status_report = "Adamantine height(px):" + height + " width(px):" + width + " length(byte):" + length + " time(ms): " + deltat; 
-					el.createEl("div",{ text: status_report });
-				}
-			});
-	}
 	render_type: number;
 	dark_mode: number;
 	dom_mark: string;
 	report: boolean;
+	encodedDiagram: string;
+	diagram_height: number;
+	diagram_width: number;
+	timestamp: number;
+	
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
 		this.report = report;
+		this.encodedDiagram = "";
+		this.diagram_height = 0;
+		this.diagram_width = 0;
 	}
 	
+    svg = async(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {	
+	
+		factory().then(
+			async (instance) => {
+				this.timestamp = Date.now();
+				let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
+				let get_height = instance.cwrap('pick_height', 'number', ['number']);
+				let get_width = instance.cwrap('pick_width', 'number', ['number']);
+				this.encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
+				this.diagram_height = get_height(0);
+				this.diagram_width = get_width(0);
+				await this.diagram_handler(this.encodedDiagram, el, ctx);	
+			}
+		);
+		
+	}
+	
+	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
+		let length = source.length;	
+		const parser = new DOMParser();
+		let svg = parser.parseFromString(source, "image/svg+xml");
+		const links = svg.getElementsByTagName("a");
+		for (let i = 0; i < links.length; i++) {
+			const link = links[i];
+			link.addClass("internal-link");
+		}
+		
+		if (this.render_type === 1) {
+			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+		}
+		else if(this.render_type === 2) {
+			el.createEl("div",{ text: source });
+		}
+		else {
+			console.log('dummy encoder');
+		}
+		
+		if (this.report) {
+			let deltat = Date.now() - this.timestamp;
+			let status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
+			el.createEl("div",{ text: status_report });
+		}
+	}
+
+
 }
 
 export default class AdamantinePickPlugin extends Plugin {
 	settings: AdamantinePickSettings;
-
+	total_builtin_samples: number = 4;
 	
 	async onload(): Promise<void> {
 		console.log('loading adamantine pick plugin')
@@ -107,14 +123,16 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		
 
-		if (this.settings.sample_to_render < 4) {
-			const dir = "sample-diagrams";
+		if (this.settings.sample_to_render < this.total_builtin_samples) {
+			
+			const dir = this.settings.samples_dir;
 			try {
 				await this.app.vault.createFolder(dir)
 			}
 			catch (error) {
 				console.log(error.toString());
 			}
+			
 			let samples_list = ["Cheatsheet", "Palindrome", "Triforce", "Dummy"];
 			let arr_in = 0;
 			arr_in = this.settings.sample_to_render;
@@ -123,11 +141,12 @@ export default class AdamantinePickPlugin extends Plugin {
 			let sample_content = this.output_builtin_diagram(arr_in);
 			try {
 				await this.app.vault.create(filename, sample_content);
+				this.settings.sample_to_render = 4;
+				await this.saveSettings();
 			}
 			catch (error) {
 				console.log(error.toString());
 			}
-			this.settings.sample_to_render = 4;
 		}
 	}
 
