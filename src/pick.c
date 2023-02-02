@@ -12,8 +12,7 @@
 	Because passing pointers from js to C is complicated 
 	it passes pointer to inner static variable to pikchr
 	and cwrap method to get/set it from javascript/typescript
-	[typescript/javascript method] <-[ pick ]-> [pointer pikchr]
-	
+	[typescript/javascript method] <- [pick] -> [pointer pikchr]
 */
 
 #include "pikchr.c"

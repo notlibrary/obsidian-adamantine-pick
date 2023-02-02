@@ -379,4 +379,3 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			})
 	}
 }
-

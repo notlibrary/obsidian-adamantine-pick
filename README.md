@@ -70,13 +70,13 @@ Build `pick.js` from `pick.c` wrap to `pikchr.c` artifact
 npm run pikchr
 ```
 	
-The compile one-liner is this
+The compiler one-liner is this
 
 ```
 emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
 ```
 
-Build(and minify) `main.js` from `main.ts` wrapper
+Bundle build(and minify) `main.js` from `main.ts` wrapper
 
 ```
 npm run build
