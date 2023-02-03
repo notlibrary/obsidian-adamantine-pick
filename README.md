@@ -12,11 +12,13 @@ Pikchr itself
 
 ![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
 
-```pikchr
-box "What are we going to do today" "Second Brain?" fit 
-arrow
-box "The same thing we do everyday" "To take over the World!" fit
-```
+Use note with 3-backticks fenced code block marked `pikchr` to get SVG in
+
+	```pikchr
+	box "What are we going to do today" "Second Brain?" fit 
+	arrow
+	box "The same thing we do everyday" "To take over the World!" fit
+	```
 
 ## Installation
 
@@ -111,10 +113,10 @@ with encoded diagram and even leaves some more free space for others
 
 *tl, dr:* for those who read it to the end "BanKan" diagram
 
-```pikchr
-box "DONE"; box "IN" ; box "DO" ; down; move from first box.n
+	```pikchr
+	box "DONE"; box "IN" ; box "DO" ; down; move from first box.n
 
-DONE: [ box "Shit" ] ; right 
-IN: box "Random"
-DO: box "Task 1" "Task 2" "Task 3"
-```
+	DONE: [ box "Shit" ] ; right 
+	IN: box "Random"
+	DO: box "Task 1" "Task 2" "Task 3"
+	```
