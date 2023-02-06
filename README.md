@@ -20,6 +20,9 @@ Use note with 3-backticks fenced code block marked `pikchr` to get SVG in
 	box "The same thing we do everyday" "To take over the World!" fit
 	```
 
+> ...quick pikchr diagram in one of this text notes maybe(or not) 
+> extremly useful for anyone out there
+
 ## Installation
 
 Because `pikchr.c` precompiled with emcc installing this plugin allows user to
@@ -58,6 +61,7 @@ to your Vault into `VaultFolder/.obsidian/plugins/adamantine-pick` folder
 ```
 cd VaultFolder/.obsidian/plugins
 git clone https://github.com/notlibrary/obsidian-adamantine-pick adamantine-pick
+cd adamantine-pick
 ```
 
 Install node.js dev packages
