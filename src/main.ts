@@ -168,7 +168,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	private output_builtin_diagram(index: number)
 	{
 		
-		const samples_list = this.settings.sample_list;
+		const samples_list = this.settings.samples_list;
 		
 		let src = "# " + samples_list[index - 1] + "\n";
 		src += "Sample [Pikchr](https://pikchr.org) diagram in [Obsidian](https://obsidian.md) note by [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin \n";
