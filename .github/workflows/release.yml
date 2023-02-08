@@ -14,19 +14,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-	  - uses: numworks/setup-emscripten@v1
-		with:
-		  sdk: latest-fastcomp
+      - uses: numworks/setup-emscripten@v1
+        with:
+          sdk: latest-fastcomp
       - uses: actions/setup-node@v1
         with:
           node-version: "19.x"
-	  - name: Use emsdk and Node.js
+      - name: Use emsdk and Node.js
 	  
       - name: Build
         id: build
         run: |
           npm install
-		  npm run pikchr
+          npm run pikchr
           npm run build
           mkdir ${{ env.PLUGIN_NAME }}
           cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
