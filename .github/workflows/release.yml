@@ -14,13 +14,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: numworks/setup-emscripten@v1
-        with:
-          sdk: latest-fastcomp
-      - uses: actions/setup-node@v1
+      - name: Use Node.js
+        uses: actions/setup-node@v1
         with:
           node-version: "19.x"
-      - name: Use emsdk and Node.js
+      - name : Use emcc
+        uses: numworks/setup-emscripten@v1
+        with:
+          sdk: latest-fastcomp
       
       - name: Build
         id: build
