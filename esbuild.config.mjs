@@ -29,8 +29,6 @@ esbuild.build({
 		"@codemirror/language",
 		"@codemirror/lint",
 		"@codemirror/search",
-		"@codemirror/state",
-		"@codemirror/view",
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
