@@ -19,10 +19,8 @@ jobs:
         with:
           node-version: "19.x"
       - name : Use emcc
-        uses: numworks/setup-emscripten@v1
-        with:
-          sdk: latest-fastcomp
-      
+        uses: numworks/setup-emscripten@v2
+  
       - name: Build
         id: build
         run: |
