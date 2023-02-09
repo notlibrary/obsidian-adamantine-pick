@@ -1,9 +1,11 @@
 name: Release Adamantine Pick Obsidian plugin
 
+#on:
+#  push:
+#    tags:
+#      - "*"
 on:
-  push:
-    tags:
-      - "*"
+  workflow_dispatch:
 
 env:
   PLUGIN_NAME: adamantine-pick
