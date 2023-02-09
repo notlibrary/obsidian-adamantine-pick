@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext } from "obsidian";
+import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath } from "obsidian";
 import factory = require("./pick.js");
 
 
@@ -126,7 +126,7 @@ export default class AdamantinePickPlugin extends Plugin {
 
 		if (this.settings.sample_to_render < this.total_builtin_samples) {
 			
-			const dir = this.settings.samples_dir;
+			const dir = normalizePath(this.settings.samples_dir);
 			try {
 				await this.app.vault.createFolder(dir)
 			}
@@ -137,7 +137,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			const samples_list = this.settings.samples_list;
 			let arr_in = 0;
 			arr_in = this.settings.sample_to_render;
-			const filename = dir + "/" + samples_list[arr_in - 1] + ".md";
+			const filename = normalizePath(dir + "/" + samples_list[arr_in - 1] + ".md");
 			
 			const sample_content = this.output_builtin_diagram(arr_in);
 			try {
@@ -350,8 +350,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				.setPlaceholder('pikchr pick')
 				.setValue(this.plugin.settings.block_identify[0])
 				.onChange(async (value) => {
-					console.log('md block id:' + value);
-					this.plugin.settings.block_identify[0] = value;
+					let valid = value.split(" ")[0];
+					if (valid.length > 1024) {valid = "pikchr"; }
+					console.log('md block id:' + valid);
+					this.plugin.settings.block_identify[0] = valid; 
 					await this.plugin.saveSettings();
 				}));
 		
@@ -362,8 +364,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				.setPlaceholder('adamantine')
 				.setValue(this.plugin.settings.output_dom_mark)
 				.onChange(async (value) => {
-					console.log('pikchr output dom class: ' + value);
-					this.plugin.settings.output_dom_mark = value;
+					let valid = value.split(" ")[0];
+					if (valid.length > 1024) {valid = "adamantine"; }
+					console.log('pikchr output dom class: ' + valid);
+					this.plugin.settings.output_dom_mark = valid;
 					await this.plugin.saveSettings();
 				}));
 				

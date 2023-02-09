@@ -12,7 +12,7 @@ Pikchr itself
 
 ![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
 
-Use note with 3-backticks fenced code block marked `pikchr` to get SVG in
+Use note with 3-backticks(tildes) fenced code block marked `pikchr` to get SVG in
 
 	```pikchr
 	box "What are we going to do today" "Second Brain?" fit 
@@ -22,6 +22,13 @@ Use note with 3-backticks fenced code block marked `pikchr` to get SVG in
 
 > ...quick pikchr diagram in one of this text notes maybe(or not) 
 > extremly useful for anyone out there
+
+Use `adamantine` class attribute selector to manipulate it from code
+
+> GPT-3 parrot #39402817203 pikchr random space station map adamantine diagram note
+> and fix 9000 oval in it
+
+See? "Absurd nerd value" for 3 pages free wrapper script  
 
 ## Installation
 
@@ -94,6 +101,8 @@ To debug wrapper in loop
 npm run dev
 ```
 
+Build server is also usable [emcc from github actions](https://github.com/numworks/setup-emscripten) 
+
 ## Pikchr Official Documentation References
 
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
@@ -124,3 +133,4 @@ with encoded diagram and even leaves some more free space for others
 	IN: box "Random"
 	DO: box "Task 1" "Task 2" "Task 3"
 	```
+
