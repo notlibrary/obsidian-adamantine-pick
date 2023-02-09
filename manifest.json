@@ -1,11 +1,11 @@
 {
-	"id": "adamantine-pick",
-	"name": "Adamantine Pick",
-	"version": "0.4.2",
-	"minAppVersion": "0.4.2",
-	"description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
-	"author": "Urist McMiner",
-	"authorUrl": "https://github.com/notlibrary",
-	"fundingUrl": "https://github.com/notlibrary",
-	"isDesktopOnly": false
+  "id": "adamantine-pick",
+  "name": "Adamantine Pick",
+  "version": "0.4.3",
+  "minAppVersion": "0.4.2",
+  "description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
+  "author": "Urist McMiner",
+  "authorUrl": "https://github.com/notlibrary",
+  "fundingUrl": "https://github.com/notlibrary",
+  "isDesktopOnly": false
 }
