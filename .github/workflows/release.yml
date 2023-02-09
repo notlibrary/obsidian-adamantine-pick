@@ -19,9 +19,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16.x"
+          node-version: "19.x"
       - name : Use emcc
-        uses: numworks/setup-emscripten@v1
+        uses: mymindstorm/setup-emsdk@v11
   
       - name: Build
         id: build
