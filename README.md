@@ -28,7 +28,7 @@ Use `adamantine` class attribute selector to manipulate it from code
 > GPT-3 parrot #39402817203 pikchr random space station map adamantine diagram note
 > and fix 9000 oval in it
 
-See? "Absurd nerd value" for 3 pages free wrapper script  
+See? "Absurd nerd value" for 3 pages free wrapper script(plugin)  
 
 ## Installation
 
@@ -101,7 +101,8 @@ To debug wrapper in loop
 npm run dev
 ```
 
-Build server is also usable [emcc from github actions](https://github.com/numworks/setup-emscripten) 
+Build server actions workflow is also usable to automate this(and version bump)
+[See emsdk from github actions](https://github.com/mymindstorm/setup-emsdk) 
 
 ## Pikchr Official Documentation References
 
