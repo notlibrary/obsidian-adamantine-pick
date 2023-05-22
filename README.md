@@ -109,7 +109,7 @@ Build server actions workflow is also usable to automate this(and version bump)
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
-- [Source Artifact](https://pikchr.org/home/artifact/02f23c6c39)
+- [Source Artifact](https://pikchr.org/home/artifact/da1b3e3f21)
 
 ## Note
 

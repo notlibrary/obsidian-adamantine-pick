@@ -265,21 +265,21 @@ export default class AdamantinePickPlugin extends Plugin {
 		cylinder "cylinder" at 1 right of previous
 		file "file" at 1 right of previous
 		line "line" above from .8 below last oval.w
-		arrow "arrow" above from 1 right of previous
+		arrow <-> "arrow <->" above from 1 right of previous
 		spline from previous+(1.8cm,-.2cm) \
 		   go right .15 then .3 heading 30 then .5 heading 160 then .4 heading 20 \
 		   then right .15
-		"spline" at 3rd vertex of previous
+        "spline" at 3rd vertex of previous
 		dot color red at .6 below last line " .c" ljust
 		text "dot" with .s at .2cm above previous.n
 		arc from 1 right of previous dot
 		text "arc" at (previous.start, previous.end)
-		text "text" at 1.3 right of start of previous arc
+		text "text" "mono" mono at 1.3 right of start of previous arc
 		line "aligned above" aligned above "aligned below" aligned below from .8 below last dot.w
 		box "bold" bold "italic" italic "bold-italic" bold italic at .6 below previous arc 
 		right 
-		arrow <->
-		box "arrow <->"
+		arrow dashed "arrow" above "dashed" below
+		box "bold" mono bold "italic" mono italic "bold italic" mono bold italic
 		]
 		Border: box thin width CHEAT_SHEET.width+0.5in height CHEAT_SHEET.height+0.5in at CHEAT_SHEET.center
 		Caption: text "pikchr cheat sheet from 9001 previous oval" italic with .n at 0.1cm below CHEAT_SHEET.s
