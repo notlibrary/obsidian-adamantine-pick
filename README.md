@@ -40,9 +40,9 @@ itself.  This makes plugin embeddable usable "out of the box" "client-side"
 With user interface
 - Ensure Safe mode is **off** 
 - Settings > Community plugins > Turn On Community Plugis
-- Click Browse community plugins
+- Click Browse community plugins or just open install URL `obsidian://show-plugin?id=adamantine-pick`
 - Search for "Adamantine Pick"
-- Click Install
+- Click Install 
 
 Manually installing
 - Copy over `main.js`, `manifest.json`, `styles.css` to your Vault 
