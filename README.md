@@ -39,17 +39,19 @@ itself.  This makes plugin embeddable usable "out of the box" "client-side"
 
 With user interface
 - Ensure Safe mode is **off** 
-- Settings > Community plugins > Turn On Community Plugis
+- Settings > Community plugins > Turn On Community Plugins
 - Click Browse community plugins or just open install URL `obsidian://show-plugin?id=adamantine-pick`
 - Search for "Adamantine Pick"
 - Click Install 
+- Don't forget to turn it **ON** with the purple slider
+- Settings > Community Plugins > Installed Plugins > Adamantine Pick
 
 Manually installing
 - Copy over `main.js`, `manifest.json`, `styles.css` to your Vault 
 `VaultFolder/.obsidian/plugins/adamantine-pick/`
 
 Test installing
-- Paste this plugin repo link into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
+- Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
 ## How to build plugin
 
