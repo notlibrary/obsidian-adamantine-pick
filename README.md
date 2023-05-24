@@ -139,4 +139,6 @@ decodable anywhere by anyone
 	IN: box "Random"
 	DO: box "Task 1" "Task 2" "Task 3"
 	```
-
+	
+*P.S.* Although not best practice because "Digital? Every Idiot Can Count to One"(c) 
+I pushed my lame memo test OPamp circuit diagram note into separate `src/opamp.md`
