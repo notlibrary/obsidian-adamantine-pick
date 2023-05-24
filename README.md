@@ -30,6 +30,8 @@ Use `adamantine` class attribute selector to manipulate it from code
 
 See? "Absurd nerd value" for 3 pages free wrapper script(plugin)  
 
+![adamantine_note_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/82085fce-46fc-4bed-b14a-e8e7d9eb5cab)
+
 ## Installation
 
 Because `pikchr.c` precompiled with emcc installing this plugin allows user to
