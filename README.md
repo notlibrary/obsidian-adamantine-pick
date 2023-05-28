@@ -32,6 +32,10 @@ See? "Absurd nerd value" for 3 pages free wrapper script(plugin)
 
 ![adamantine_note_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/82085fce-46fc-4bed-b14a-e8e7d9eb5cab)
 
+Resistor color table calc? Sure 
+
+![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/7462ad4a-e2ac-4384-ab3d-8459ff86cb5b)
+
 ## Installation
 
 Because `pikchr.c` precompiled with emcc installing this plugin allows user to
