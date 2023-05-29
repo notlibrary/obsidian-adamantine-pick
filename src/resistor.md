@@ -1,3 +1,6 @@
+---
+tag: adamantine
+--- 
 Sample resistor color code calculator cheat sheet adamantine diagram note
 Install [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin and view this note through Obsidian
 
@@ -23,7 +26,7 @@ BODY: resistor
 right 
 line 0.8 from BODY.e "3.21kΩ" mono above "1% 50ppm/K" mono below
 left
-line from BODY.w "6 bands" mono above
+line 0.8 from BODY.w "6 bands" mono above
 
 dot at 1px below BODY.c
 
@@ -72,8 +75,8 @@ v "Bad" ; right
 v "Black" 
 v "0 0 0"
 v "x 1"
-v  "250 (U)"
-v
+v 
+v "250 (U)"
 
 move down 0.2 from 7th box.n 
 v "Beer" ; right 
@@ -151,7 +154,7 @@ v
 move down 0.2 from 61th box.n 
 v "Get" ; right 
 v "Gold" fill gold
-v 
+v invis "3rd digit"
 v "x 0.1"
 v "5% (J)" 
 v
@@ -159,7 +162,7 @@ v
 move down 0.2 from 67th box.n 
 v "Some" ; right 
 v "Silver" fill silver
-v 
+v invis "5,6 bands"
 v "x 0.01"
 v "10% (K)" 
 v
@@ -167,8 +170,10 @@ v
 move down 0.2 from 73th box.n 
 v "Now!" ; right 
 v "None"
-v 
-v 
+BORDER: v invis "only"
+v
 v "20% (M)" 
 v
+line from BORDER.sw to BORDER.se
 ```
+#adamantine

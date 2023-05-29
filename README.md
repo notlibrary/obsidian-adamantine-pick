@@ -59,6 +59,37 @@ Manually installing
 Test installing
 - Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
+## Picking up and Pushing adamantine diagaram notes(TO DO)
+To pick up adamantine diagram notes use separate command palette Adamantine Pick command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
+If it has internet it will try the script to fetch entire `adamantine-diagram-notes.zip` archive 
+collection from plugin release page check it and unpack it into your `VaultFolder/adamantine` subfolder
+Or you can do it manually by copying `.md` files from repo `/src` folder to your vault
+
+To push your own adamantine diagram note design into plugin collection use this checklist: 
+
+- utf-8 encoded text file in english(preferably)
+- less equal 4kb(4096 bytes) size that fits in single hdd block
+- lowercase (a-z) less equal 8 characters unique filename len with extension .md 8 + 2
+- has one or more pikchr diagrams in it mathjax markdown optionally
+- fits in a single screen when picked with Obsidian
+- tagged with yaml `--- tag: adamantine ---` and `#adamantine`
+- tight cybersecure has no malicious executable code in it(i.e. perl one-liners) 
+- no ads messing with others personal data(OP self signature is ok)
+- embeddable in place does not rely on cloud internet connection or dynamic linking
+- decodable with stock computer hardware 
+- does not repeat existing adamantine diagram notes in collection(also has unique filename)
+- picking it is memorable has some reusability utility cool nerd/hacker value  
+- easy human digestable readable can be shared in place has clear semantics bits of knowledge
+- not necessary a STEM/EE/ME cheatsheet use your own imagination show some effort
+- easy discardable and disposable you constantly want to asswipe with it purple toilet paper
+
+then [fork this repo](https://github.com/obsidian/adamantine_pick) commit it into `src` folder 
+then make pull request thread and wait for approve
+
+Sure requirements are hard to met adamantine diagram notes are rare it's sort of CCG or sticker 
+album with dinosaurs operating over the popular note-taking app open source vector graphic stack 
+with hope to aid your workflow that's it basically
+
 ## How to build plugin
 
 Install and activate [emcc](https://emscripten.org) using emsdk

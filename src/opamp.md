@@ -1,3 +1,6 @@
+---
+tag: adamantine
+---
 Sample crafted adamantine diagram note to test the theory on the toolstack affair
 Install [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin and view this note through Obsidian
 
@@ -151,3 +154,4 @@ server in literally any part of the world unbelievable structural efficency
 
 The following open source toolstack contributors made it happen:  
 [Emscripten](https://emscripten.org/) [Typescript](https://www.typescriptlang.org/)  [Electron](https://www.electronjs.org/) [Obsidian](https://obsidian.md/) [Markdown](https://spec.commonmark.org/) [MathJax](https://www.mathjax.org/)  [Pikchr](https://pikchr.org)  
+#adamantine 
