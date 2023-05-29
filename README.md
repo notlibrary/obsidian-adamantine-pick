@@ -60,10 +60,13 @@ Test installing
 - Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
 ## Picking up and Pushing adamantine diagaram notes(TO DO)
-To pick up adamantine diagram notes use separate command palette Adamantine Pick command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
-If it has internet it will try the script to fetch entire `adamantine-diagram-notes.zip` archive 
-collection from plugin release page check it and unpack it into your `VaultFolder/adamantine` subfolder
-Or you can do it manually by copying `.md` files from repo `/src` folder to your vault
+To pick up adamantine diagram notes use separate "Adamantine Pick" command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
+If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire note 
+collection from github plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
+
+Or you can pick it manually by copying `src/*.md` files from this plugin repo to your `VaultFolder/adamantine` 
+or downloading `adamantine-diagram-notes.zip` from latest [release page](https://github.com/notlibrary/obsidian-adamantine-pick/releases) 
+and extracting it to your `VaultFolder/adamantine`
 
 To push your own adamantine diagram note design into plugin collection use this checklist: 
 
@@ -121,11 +124,17 @@ Build `pick.js` from `pick.c` wrap to `pikchr.c` artifact
 ```
 npm run pikchr
 ```
+
+Build `adamantine-diagram-notes.json` database
+
+```
+npm run notes
+```
 	
 The compiler one-liner is this
 
 ```
-emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O1 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
+emcc emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O2 --memory-init-file 0 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
 ```
 
 Bundle build(and minify) `main.js` from `main.ts` wrapper
