@@ -97,7 +97,7 @@ jobs:
           asset_path: ./styles.css
           asset_name: styles.css
           asset_content_type: text/css
-          
+
       - name: Upload adamantine notes zip file
         id: upload-adamantine-zip
         uses: actions/upload-release-asset@v1
@@ -108,8 +108,8 @@ jobs:
           asset_path: ./src/${{ env.NOTES_NAME }}.zip
           asset_name: ${{ env.NOTES_NAME }}.zip
           asset_content_type: application/zip
-          
-     - name: Upload adamantine notes JSON file
+
+      - name: Upload adamantine notes JSON file
         id: upload-adamantine-json
         uses: actions/upload-release-asset@v1
         env:
