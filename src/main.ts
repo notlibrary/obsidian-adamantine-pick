@@ -20,6 +20,7 @@ export interface AdamantinePickSettings {
 	samples_list: string[];
 	samples_dir: string;
 	adamantine_dir: string;
+	decode_locally: boolean;
 }
 
 export const DEFAULT_SETTINGS: AdamantinePickSettings = {
@@ -31,7 +32,8 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	output_diagram_stats: false,
 	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"],
 	samples_dir: "sample-diagrams",
-	adamantine_dir: "adamantine"
+	adamantine_dir: "adamantine",
+	decode_locally: false,
 }
 
 export interface AdamantineDiagramNote {
@@ -208,6 +210,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			try {
 				const response = await requestUrl(options); 			
 				let adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
+				if (this.settings.decode_locally) { console.log('download zip instead'); /* Read permissions import, nah */ }
 				
 				adamantine_notes.forEach(async element => {
 					try {
@@ -441,6 +444,17 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				cb.onChange(async (value: boolean) => {
 					console.log('report diagram stats: ' + value);
 					this.plugin.settings.output_diagram_stats = value;
+					await this.plugin.saveSettings();
+				});
+			})
+		new Setting(containerEl)
+			.setName('Use local adamantine diagram notes JSON')
+			.setDesc('admantine-diagram-notes.json from plugin folder(for testing)')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.decode_locally);
+				cb.onChange(async (value: boolean) => {
+					console.log('decode adamantine json locally: ' + value);
+					this.plugin.settings.decode_locally = value;
 					await this.plugin.saveSettings();
 				});
 			})
