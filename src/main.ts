@@ -1,4 +1,5 @@
-import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath } from "obsidian";
+import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
+import { Buffer } from "buffer";
 import factory = require("./pick.js");
 
 
@@ -18,6 +19,7 @@ export interface AdamantinePickSettings {
 	output_diagram_stats: boolean;
 	samples_list: string[];
 	samples_dir: string;
+	adamantine_dir: string;
 }
 
 export const DEFAULT_SETTINGS: AdamantinePickSettings = {
@@ -28,7 +30,13 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	bleach_diagram: false,
 	output_diagram_stats: false,
 	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"],
-	samples_dir: "sample-diagrams"
+	samples_dir: "sample-diagrams",
+	adamantine_dir: "adamantine"
+}
+
+export interface AdamantineDiagramNote {
+	filename: string;
+	base64content: string;
 }
 
 export interface Processor {
@@ -121,7 +129,12 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
 
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
-		
+		this.addCommand({
+			id: 'pick-adamantine-notes',
+			name: 'Adamantine Pick',
+			hotkeys: [{ modifiers: ["Mod", "Shift"], key: "F5" }],
+			callback: () => { this.pick_adamantine_notes(); },
+		});
 		
 
 		if (this.settings.sample_to_render < this.total_builtin_samples) {
@@ -163,6 +176,56 @@ export default class AdamantinePickPlugin extends Plugin {
 	async saveSettings(): Promise<void>  {
 		
 		await this.saveData(this.settings);
+	}
+	
+	private async pick_adamantine_notes(): Promise<void>
+	{
+			const json_name = "adamantine-diagram-notes.json";
+			
+			const github_url = "https://github.com/notlibrary/obsidian-adamantine-pick/releases/download/";
+			const tag_string = this.manifest.version;
+			const output_folder = normalizePath(this.settings.adamantine_dir);
+	
+			let url = github_url + "/" + tag_string + "/" + json_name;
+			
+			const options: RequestUrlParam = {
+				url: url,
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+			let response: RequestUrlResponse;
+			
+			const dir = normalizePath(output_folder);
+			try {
+				await this.app.vault.createFolder(dir)
+			}
+			catch (error) {
+				console.log(error.toString());
+			}		
+			
+			try {
+				const response = await requestUrl(options); 			
+				let adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
+				
+				adamantine_notes.forEach(async element => {
+					try {
+						const output_folder = normalizePath(this.settings.adamantine_dir); 
+						const filename = normalizePath(output_folder + "/" + element.filename + ".md");
+						const decoded: string = Buffer.from(element.base64content, 'base64').toString('utf8');
+						console.log(filename);
+						await this.app.vault.create(filename, decoded);
+					}
+					catch (error) {
+						console.log('failed to save' + error.toString());
+					}
+				});	
+			}
+			catch(error) {
+				console.log('failed to fetch' + JSON.stringify(error));
+			}
+			console.log('successfully fetched');			
 	}
 	
 	private output_builtin_diagram(index: number)
@@ -287,7 +350,6 @@ export default class AdamantinePickPlugin extends Plugin {
 		return src;
 	}	
 }
-
 
 export class AdamantinePickSettingsTab extends PluginSettingTab {
 	plugin: AdamantinePickPlugin;
