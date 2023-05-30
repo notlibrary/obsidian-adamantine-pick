@@ -126,16 +126,16 @@ Build `pick.js` from `pick.c` wrap to `pikchr.c` artifact
 npm run pikchr
 ```
 
-Build `adamantine-diagram-notes.json` database
-
-```
-npm run notes
-```
-	
 The compiler one-liner is this
 
 ```
 emcc emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O2 --memory-init-file 0 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
+```
+
+Encode `adamantine-diagram-notes.json` database
+
+```
+npm run notes
 ```
 
 Bundle build(and minify) `main.js` from `main.ts` wrapper
