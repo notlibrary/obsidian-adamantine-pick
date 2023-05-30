@@ -34,7 +34,7 @@ See? "Absurd nerd value" for 3 pages free wrapper script(plugin)
 
 Resistor color table calc? Sure 
 
-![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/7462ad4a-e2ac-4384-ab3d-8459ff86cb5b)
+![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/e16d1b41-e408-40d8-98b4-884812cb2708)
 
 ## Installation
 
@@ -59,7 +59,8 @@ Manually installing
 Test installing
 - Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
-## Picking up and Pushing adamantine diagaram notes(TO DO)
+## Picking up and Pushing adamantine diagaram notes
+
 To pick up adamantine diagram notes use separate "Adamantine Pick" command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
 If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire note 
 collection from github plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
