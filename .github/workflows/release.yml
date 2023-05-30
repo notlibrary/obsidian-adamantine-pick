@@ -11,7 +11,7 @@ on:
 env:
   PLUGIN_NAME: adamantine-pick
   NOTES_NAME: adamantine-diagram-notes
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
           node-version: "16"
       - name : Use emcc
         uses: mymindstorm/setup-emsdk@v11
-  
+
       - name: Build
         id: build
         run: |
