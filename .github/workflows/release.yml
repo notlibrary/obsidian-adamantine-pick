@@ -108,3 +108,14 @@ jobs:
           asset_path: ./src/${{ env.NOTES_NAME }}.zip
           asset_name: ${{ env.NOTES_NAME }}.zip
           asset_content_type: application/zip
+          
+     - name: Upload adamantine notes JSON file
+        id: upload-adamantine-json
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.NOTES_NAME }}.json
+          asset_name: ${{ env.NOTES_NAME }}.json
+          asset_content_type: application/json
