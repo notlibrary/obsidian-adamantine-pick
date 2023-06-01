@@ -59,20 +59,20 @@ Manually installing
 Test installing
 - Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
-## Picking up and Pushing adamantine diagaram notes
+## Picking up and Pushing adamantine diagram notes
 
 To pick up adamantine diagram notes use separate "Adamantine Pick" command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
-If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire note 
+If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire notes 
 collection from github plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
 
-Or you can pick it manually by copying `src/*.md` files from this plugin repo to your `VaultFolder/adamantine` 
+Or you can pick up it manually by copying `src/*.md` files from this plugin repo to your `VaultFolder/adamantine` 
 or downloading `adamantine-diagram-notes.zip` from latest [release page](https://github.com/notlibrary/obsidian-adamantine-pick/releases) 
 and extracting it to your `VaultFolder/adamantine`
 
 To push your own adamantine diagram note design into plugin collection use this checklist: 
 
 - utf-8 encoded text file in english(preferably)
-- less equal 4kb(4096 bytes) size that fits in single hdd block
+- less equal 4kb(4096 bytes) size that fits in a single hdd block
 - lowercase (a-z) less equal 8 characters unique filename len with extension .md 8 + 2
 - has one or more pikchr diagrams in it mathjax markdown optionally
 - fits in a single screen when picked with Obsidian

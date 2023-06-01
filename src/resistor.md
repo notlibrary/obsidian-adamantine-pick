@@ -65,7 +65,7 @@ arrow 0.3 -> from 0.3 left of Caption.e
 define v { box ht 0.2 }
 box "Mnemonic"
 box "Color"
-box "Signifcant" "Digits"
+box "Significant" "Digits"
 box "Multiply"
 box "Tolerance"
 box "Temp Coeff" "(ppm/K)"
