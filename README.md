@@ -103,6 +103,9 @@ or remote framebuffer keyboard protocol with your target host screen browser
 or vnc window so you fully observe notes decoded remotely locally  
 
 I tested it with neverinstall boxes you can retry it anytime
+If you are running youtube channel you can show this trick to your subscribers
+"Unboxing adamantine diagram notes" lol anyway it's very hard to acheive truly 
+reusable city screens
 
 ## How to build plugin
 
