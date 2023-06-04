@@ -28,6 +28,9 @@ Also the algorithm seems cool at the first glance avoid turning it into glass be
 swiss army knife and offline wikipedia dump then take care of yourself 
 and lazy overwatch what really happened with it if you will
 
+In fact it doesn't even rely neither on the contents of user notes nor the daemonic nature
+of continuous software note taking process operation which in turn only makes it even cooler
+
 P.S. What's the difference between noticer giver taker picker and the graph? None 
 
 #adamantine
