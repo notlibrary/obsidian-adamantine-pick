@@ -8,7 +8,7 @@ overload(i.e. Obsidian Discord server) without any single idea what to do next
 The 3-step algorithm as follows:
 1. Get over it there's nothing you can do they all just pieces of paper flying away from you
 2. Push finest extremly embeddable small vector graphics code in
-3. Start noticing pushing taking graphing short branded standardized pieces with highest estimated repickability/reusability value with it
+3. (Optional) Start noticing pushing taking graphing short branded standardized pieces with highest estimated repickability/reusability value with it
 
 ```pikchr
 GIVER: [
@@ -26,4 +26,5 @@ periodic table of elements and none of it elements exist in it's pure form in na
 
 P.S. What's the difference between noticer giver taker picker and the graph? None 
 
+It somethat promotes situation awareness mental clarity and tactical thinking whatever it is
 #adamantine
