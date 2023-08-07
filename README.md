@@ -94,6 +94,19 @@ Sure requirements are hard to met adamantine diagram notes are rare it's sort of
 album with dinosaurs operating over the popular note-taking app open source vector graphic stack 
 with hope to aid your workflow that's it basically
 
+## Remote gripping adamantine diagram notes
+
+This is the most hilarious usage case then you virtualize decoder desktop box 
+(with obsidian and plugin installed and note collection picked in it) on the remote 
+virtualization server then share hypervisor virtual machine player over the network 
+or remote framebuffer keyboard protocol with your target host screen browser 
+or vnc window so you fully observe notes decoded remotely locally  
+
+I tested it with neverinstall boxes you can retry it anytime
+If you are running youtube channel you can show this trick to your subscribers
+"Unboxing adamantine diagram notes" lol anyway it's very hard to acheive truly 
+reusable city screens
+
 ## How to build plugin
 
 Install and activate [emcc](https://emscripten.org) using emsdk

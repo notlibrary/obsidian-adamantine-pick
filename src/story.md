@@ -24,7 +24,14 @@ Caption: text "RABBITHOLE" with .s at 0.1cm above GIVER.n
 Ironically the highest estimated repickability value short note in human history is probably
 periodic table of elements and none of it elements exist in it's pure form in nature
 
+Also the algorithm seems cool at the first glance avoid turning it into glass bead game 
+swiss army knife and offline wikipedia dump then take care of yourself 
+and lazy overwatch what really happened with it if you will
+
+In fact it doesn't even rely neither on the contents of user notes nor the daemonic nature
+of continuous software note taking process operation which in turn only makes it even cooler
+It somethat promotes situation awareness mental clarity and tactical thinking whatever it is
+
 P.S. What's the difference between noticer giver taker picker and the graph? None 
 
-It somethat promotes situation awareness mental clarity and tactical thinking whatever it is
 #adamantine
