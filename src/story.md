@@ -30,7 +30,7 @@ and lazy overwatch what really happened with it if you will
 
 In fact it doesn't even rely neither on the contents of user notes nor the daemonic nature
 of continuous software note taking process operation which in turn only makes it even cooler
-It somethat promotes situation awareness mental clarity and tactical thinking whatever it is
+It somethat promotes situational awareness mental clarity and tactical thinking whatever it is
 
 P.S. What's the difference between noticer giver taker picker and the graph? None 
 
