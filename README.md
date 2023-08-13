@@ -34,7 +34,7 @@ See? "Absurd nerd value" for 3 pages free wrapper script(plugin)
 
 Resistor color table calc? Sure 
 
-![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/e16d1b41-e408-40d8-98b4-884812cb2708)
+![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/28737d00-259d-42af-977c-a485ec7e812b)
 
 ## Installation
 
@@ -171,7 +171,7 @@ Build server actions workflow is also usable to automate this(and version bump)
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
-- [Source Artifact](https://pikchr.org/home/artifact/da1b3e3f21)
+- [Source Artifact](https://pikchr.org/home/artifact/018a05d1d6a3fd1b)
 
 ## Note
 
