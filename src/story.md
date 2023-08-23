@@ -3,7 +3,8 @@ tag: adamantine
 ---
 Adamantine diagram note explaining plugin customized "(P)KM methodology" via user story
 So you eventually find yourself surrounded with tons of useless city krank file information
-overload(i.e. Obsidian Discord server) without any single idea what to do next 
+overload(i.e. Obsidian Discord server or even worse Twitch chat with 100k users) 
+without any single idea what to do next 
 
 The 3-step algorithm as follows:
 1. Get over it there's nothing you can do they all just pieces of paper flying away from you
@@ -25,8 +26,10 @@ Ironically the highest estimated repickability value short note in human history
 periodic table of elements and none of it elements exist in it's pure form in nature
 
 Also the algorithm seems cool at the first glance avoid turning it into glass bead game 
-swiss army knife and offline wikipedia dump then take care of yourself 
+swiss army knife and offline wikipedia dump then take care of yourself
 and lazy overwatch what really happened with it if you will
+On the other hand avoid being useless expensive jet airshow 
+anyway it does vector calculus just for the lulz
 
 In fact it doesn't even rely neither on the contents of user notes nor the daemonic nature
 of continuous software note taking process operation which in turn only makes it even cooler

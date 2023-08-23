@@ -171,7 +171,7 @@ Build server actions workflow is also usable to automate this(and version bump)
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
-- [Source Artifact](https://pikchr.org/home/artifact/018a05d1d6a3fd1b)
+- [Source Artifact](https://pikchr.org/home/artifact/64bf5f8874)
 
 ## Note
 
