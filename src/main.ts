@@ -100,8 +100,11 @@ export class AdamantinePickProcessor implements Processor {
 		const diagrams = svg.getElementsByTagName("svg");
 		
 		if (diagrams.length === 0) {
-			/*Dump pikchr syntax errors and diagram debug prints*/
 			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+			if (this.report) {
+				const status_report_error = "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above"; 
+				el.createEl("div",{ text: status_report_error });
+			}
 		}
 		
 		for (let i = 0; i < diagrams.length; i++) {
