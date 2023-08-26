@@ -17,7 +17,7 @@ export interface AdamantinePickSettings {
 	sample_to_render: number;
 	bleach_diagram: boolean;
 	output_diagram_stats: boolean;
-	preserve_pikchr_debug_print: boolean;
+	preserve_diagram_debug_print: boolean;
 	samples_list: string[];
 	samples_dir: string;
 	adamantine_dir: string;
@@ -31,7 +31,7 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	sample_to_render: 4,
 	bleach_diagram: false,
 	output_diagram_stats: false,
-	preserve_pikchr_debug_print: true,
+	preserve_diagram_debug_print: true,
 	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"],
 	samples_dir: "sample-diagrams",
 	adamantine_dir: "adamantine",
@@ -57,14 +57,14 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_height: number;
 	diagram_width: number;
 	timestamp: number;
-	preserve_pikchr_debug_print: boolean;
+	preserve_diagram_debug_print: boolean;
 	
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
 		this.report = report;
-		this.preserve_pikchr_debug_print = preserve;
+		this.preserve_diagram_debug_print = preserve;
 		this.encodedDiagram = "";
 		this.diagram_height = 0;
 		this.diagram_width = 0;
@@ -98,11 +98,17 @@ export class AdamantinePickProcessor implements Processor {
 		}
 		
 		const diagrams = svg.getElementsByTagName("svg");
+		
+		if (diagrams.length === 0) {
+			/*Dump pikchr syntax errors and diagram debug prints*/
+			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+		}
+		
 		for (let i = 0; i < diagrams.length; i++) {
 			const diagram = diagrams[0];
 			
 			if (this.render_type === 1) {
-				if (this.preserve_pikchr_debug_print) {
+				if (this.preserve_diagram_debug_print) {
 					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
 				}
 				else {
@@ -141,7 +147,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		const dom_mark = this.settings.output_dom_mark;
 		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
 		const report = this.settings.output_diagram_stats;
-		const preserve = this.settings.preserve_pikchr_debug_print;
+		const preserve = this.settings.preserve_diagram_debug_print;
 		const render_type = this.settings.encoder_type;
 		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
@@ -453,13 +459,13 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				}));
 				
 		new Setting(containerEl)
-			.setName('Preserve pikchr debug print')
-			.setDesc('Preserve diagram print calls that are not in DOM SVG element')
+			.setName('Preserve diagram debug print')
+			.setDesc('Preserve inner diagram print calls that outputs lines before DOM SVG element')
 			.addToggle(cb => {
-				cb.setValue(this.plugin.settings.preserve_pikchr_debug_print);
+				cb.setValue(this.plugin.settings.preserve_diagram_debug_print);
 				cb.onChange(async (value: boolean) => {
 					console.log('preserve pikchr debug print: ' + value);
-					this.plugin.settings.preserve_pikchr_debug_print = value;
+					this.plugin.settings.preserve_diagram_debug_print = value;
 					await this.plugin.saveSettings();
 				});
 			})
