@@ -17,6 +17,7 @@ export interface AdamantinePickSettings {
 	sample_to_render: number;
 	bleach_diagram: boolean;
 	output_diagram_stats: boolean;
+	preserve_pikchr_debug_print: boolean;
 	samples_list: string[];
 	samples_dir: string;
 	adamantine_dir: string;
@@ -30,6 +31,7 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	sample_to_render: 4,
 	bleach_diagram: false,
 	output_diagram_stats: false,
+	preserve_pikchr_debug_print: true,
 	samples_list : ["Cheatsheet", "Palindrome", "Triforce", "Dummy"],
 	samples_dir: "sample-diagrams",
 	adamantine_dir: "adamantine",
@@ -55,12 +57,14 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_height: number;
 	diagram_width: number;
 	timestamp: number;
+	preserve_pikchr_debug_print: boolean;
 	
-	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean) {
+	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
 		this.report = report;
+		this.preserve_pikchr_debug_print = preserve;
 		this.encodedDiagram = "";
 		this.diagram_height = 0;
 		this.diagram_width = 0;
@@ -86,27 +90,38 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
 		const length = source.length;	
 		const parser = new DOMParser();
-		const svg = parser.parseFromString(source, "image/svg+xml");
+		const svg = parser.parseFromString(source, "text/html");
 		const links = svg.getElementsByTagName("a");
 		for (let i = 0; i < links.length; i++) {
 			const link = links[i];
 			link.addClass("internal-link");
 		}
 		
-		if (this.render_type === 1) {
-			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
-		}
-		else if(this.render_type === 2) {
-			el.createEl("div",{ text: source });
-		}
-		else {
-			console.log('dummy encoder');
-		}
+		const diagrams = svg.getElementsByTagName("svg");
+		for (let i = 0; i < diagrams.length; i++) {
+			const diagram = diagrams[0];
+			
+			if (this.render_type === 1) {
+				if (this.preserve_pikchr_debug_print) {
+					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+				}
+				else {
+					el.insertAdjacentHTML('beforeend', diagram.outerHTML);
+				}
+			}
+			else if(this.render_type === 2) {
+				el.createEl("div",{ text: source });
+			}
+			else {
+				console.log('dummy encoder');
+			}
+			
+			if (this.report) {
+				const deltat = Date.now() - this.timestamp;
+				const status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
+				el.createEl("div",{ text: status_report });
+			}
 		
-		if (this.report) {
-			const deltat = Date.now() - this.timestamp;
-			const status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
-			el.createEl("div",{ text: status_report });
 		}
 	}
 
@@ -126,8 +141,9 @@ export default class AdamantinePickPlugin extends Plugin {
 		const dom_mark = this.settings.output_dom_mark;
 		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
 		const report = this.settings.output_diagram_stats;
+		const preserve = this.settings.preserve_pikchr_debug_print;
 		const render_type = this.settings.encoder_type;
-		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report);
+		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
 
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
@@ -302,7 +318,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			if (i % width === 0 && i!==0) { 
 				if (parity === 0 ) {src+=" left; "; } else {src+=" right; "; }
 				parity ^=1;
-			}
+			} 
 			if  (i!==total - 1) {
 				src+= " arrow <->; ";
 			}
@@ -436,6 +452,18 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 				
+		new Setting(containerEl)
+			.setName('Preserve pikchr debug print')
+			.setDesc('Preserve diagram print calls that are not in DOM SVG element')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.preserve_pikchr_debug_print);
+				cb.onChange(async (value: boolean) => {
+					console.log('preserve pikchr debug print: ' + value);
+					this.plugin.settings.preserve_pikchr_debug_print = value;
+					await this.plugin.saveSettings();
+				});
+			})
+			
 		new Setting(containerEl)
 			.setName('Report status message after diagram into note')
 			.setDesc('height(px) width(px) size(byte) time(ms)')
