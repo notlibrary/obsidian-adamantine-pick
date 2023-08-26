@@ -8,7 +8,7 @@ The example of repickable absolute reliable 4000 years old atomical note is an a
 number theorem proof "Euclid's Theorem" as follows:
 
 It shows for any finite list of $N$ primes $p_1...p_i$ at least one additional prime not in the list exists
-$$ q = \prod_{i=1}^N{} p_i + 1 $$
+$$q = \prod_{i=1}^N{} p_i + 1$$
 1. If $q$ is prime, then there is at least one more next prime that is not in the list, namely, the $q$ itself 
 2. If $q$ is not prime...
 
