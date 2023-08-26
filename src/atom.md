@@ -18,7 +18,7 @@ then it would divide $P$
 $$P = \prod_{i=1}^N{} p_i$$ 
 but $p_x$ also divides $P + 1= q$, as just stated
 If $p_x$ divides $P$ and also $q$, then $p_x$ must also divide the difference of the two numbers which is: 
-$$P-q = (P + 1) - P = 1$$ 
+$$q - P = (P + 1) - P = 1$$ 
 Since no prime divides $1$ $p_x$ cannot be in the list
 
 This means that at least one more prime exists *beyond* those in the list
