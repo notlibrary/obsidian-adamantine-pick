@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 import { Buffer } from "buffer";
 import factory = require("./pick.js");
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 
 declare module "obsidian" {
 	interface Vault {
@@ -214,7 +214,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			const tag_string = this.manifest.version;
 			const output_folder = normalizePath(this.settings.adamantine_dir);
 	
-			let url = github_url + "/" + tag_string + "/" + json_name;
+			const url = github_url + "/" + tag_string + "/" + json_name;
 			
 			const options: RequestUrlParam = {
 				url: url,
@@ -223,7 +223,6 @@ export default class AdamantinePickPlugin extends Plugin {
 					'Content-Type': 'application/json'
 				}
 			}
-			let response: RequestUrlResponse;
 			
 			const dir = normalizePath(output_folder);
 			try {
@@ -234,8 +233,8 @@ export default class AdamantinePickPlugin extends Plugin {
 			}		
 			
 			try {
-				const response = await requestUrl(options); 			
-				let adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
+				const response: RequestUrlResponse = await requestUrl(options); 			
+				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
 				if (this.settings.decode_locally) { console.log('download zip instead'); /* Read permissions import, nah */ }
 				
 				adamantine_notes.forEach(async element => {

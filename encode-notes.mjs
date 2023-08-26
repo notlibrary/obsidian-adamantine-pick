@@ -46,7 +46,7 @@ function encodeAdamantineJSON() {
 		if (note_file.ext === notes_ext) {
 			let data = readFileSync(notes_dir + "/" + note_file.name + notes_ext, 'utf-8', function(err) {
 					if (err) {
-						onError(err);
+						console.log("Read note error readFileSync()");
 						return;
 					}
 				});
