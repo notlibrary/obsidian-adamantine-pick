@@ -41,6 +41,7 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 export interface AdamantineDiagramNote {
 	filename: string;
 	base64content: string;
+	sha256digest: string;
 }
 
 export interface Processor {
@@ -241,11 +242,12 @@ export default class AdamantinePickPlugin extends Plugin {
 					try {
 						const output_folder = normalizePath(this.settings.adamantine_dir); 
 						const filename = normalizePath(output_folder + "/" + element.filename + ".md");
+						const sha256digest = element.sha256digest;
 						const decoded: string = Buffer.from(element.base64content, 'base64').toString();
 						const sha256in = crypto.createHash('sha256').update(decoded).digest('hex').toString();  
 						console.log(sha256in);
-						if (element.sha256 === sha256in) {
-							console.log('SHA256 check success: ' + element.filename);
+						if ( sha256digest === sha256in) {
+							console.log('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);
 						}
 						else {

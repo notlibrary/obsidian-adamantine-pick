@@ -61,11 +61,11 @@ function encodeAdamantineJSON() {
 			{
 			"filename": note_file.name,
 			"base64content": base64content,
-			"bytes_size": bytes_size,
-			"sha256_digest": sha256_digest,
+			"bytessize": bytes_size,
+			"sha256digest": sha256_digest,
 			"timestamp": timestamp,
 			"encoder": encoder,
-			"encoder_version": version
+			"encoderversion": version
 			}) 	
 			total_notes++;
 		}
