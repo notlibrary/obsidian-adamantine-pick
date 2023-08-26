@@ -1,6 +1,8 @@
 import { readFileSync, writeFileSync, statSync, readdirSync } from "fs";
 import { Buffer } from "buffer";
 import path from 'path';
+import * as crypto from 'crypto';
+
 
 function readFilesSync(dir) {
   const files = [];
@@ -24,14 +26,20 @@ function readFilesSync(dir) {
   return files;
 }
 
+function lengthInUtf8Bytes(str) {
+  // Matches only the 10.. bytes that are non-initial characters in a multi-byte sequence.
+  let m = encodeURIComponent(str).match(/%[89ABab]/g);
+  return str.length + (m ? m.length : 0);
+}
 
 function encodeAdamantineJSON() {
 	const notes_dir = "src";
 	const notes_ext = ".md";
 	const json_filename = "adamantine-diagram-notes.json";
-	var notes = [ ];
-	
+	let notes = [ ];
 	const note_files = readFilesSync(notes_dir);
+	const manifest_path = "manifest.json";
+	const adamantine_manifest = JSON.parse(readFileSync(manifest_path));
 	
 	let total_notes = 0;
 	note_files.forEach((note_file) => {
@@ -43,10 +51,21 @@ function encodeAdamantineJSON() {
 					}
 				});
 			let base64content = Buffer.from(data, 'utf-8').toString('base64');
+			let bytes_size = lengthInUtf8Bytes(data);
+			let sha256_digest = crypto.createHash('sha256').update(data).digest('hex');
+			let encoding_event = new Date();
+			let timestamp = encoding_event.toJSON();
+			let encoder = adamantine_manifest.name;
+			let version = adamantine_manifest.version;
 			notes.push(
 			{
 			"filename": note_file.name,
-			"base64content": base64content
+			"base64content": base64content,
+			"bytes_size": bytes_size,
+			"sha256_digest": sha256_digest,
+			"timestamp": timestamp,
+			"encoder": encoder,
+			"encoder_version": version
 			}) 	
 			total_notes++;
 		}

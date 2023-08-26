@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 import { Buffer } from "buffer";
 import factory = require("./pick.js");
-
+import * as crypto from 'crypto';
 
 declare module "obsidian" {
 	interface Vault {
@@ -241,9 +241,16 @@ export default class AdamantinePickPlugin extends Plugin {
 					try {
 						const output_folder = normalizePath(this.settings.adamantine_dir); 
 						const filename = normalizePath(output_folder + "/" + element.filename + ".md");
-						const decoded: string = Buffer.from(element.base64content, 'base64').toString('utf8');
-						console.log(filename);
-						await this.app.vault.create(filename, decoded);
+						const decoded: string = Buffer.from(element.base64content, 'base64').toString();
+						const sha256in = crypto.createHash('sha256').update(decoded).digest('hex').toString();  
+						console.log(sha256in);
+						if (element.sha256 === sha256in) {
+							console.log('SHA256 check success: ' + element.filename);
+							await this.app.vault.create(filename, decoded);
+						}
+						else {
+							console.log('Failed SHA256 check');
+						}
 					}
 					catch (error) {
 						console.log('failed to save' + error.toString());
