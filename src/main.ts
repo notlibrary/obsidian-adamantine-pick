@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 import { Buffer } from "buffer";
-import factory = require("./pick.js");
 import * as crypto from "crypto";
+import factory = require("./pick.js");
 
 declare module "obsidian" {
 	interface Vault {
@@ -139,6 +139,7 @@ export class AdamantinePickProcessor implements Processor {
 }
 
 export default class AdamantinePickPlugin extends Plugin {
+	diagram_processor: AdamantinePickProcessor;
 	settings: AdamantinePickSettings;
 	total_builtin_samples = 4;
 	
@@ -146,15 +147,13 @@ export default class AdamantinePickPlugin extends Plugin {
 		console.log('loading adamantine pick plugin')
 		await this.loadSettings();
 		
-		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
-		let dark_mode_flag = 0x0002;
+		const dark_mode_flag = this.getdarkmodeflag();
 		const dom_mark = this.settings.output_dom_mark;
-		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
 		const report = this.settings.output_diagram_stats;
 		const preserve = this.settings.preserve_diagram_debug_print;
 		const render_type = this.settings.encoder_type;
-		const processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
-		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], processor.svg);		
+		this.diagram_processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
+		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);		
 
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
 		this.addCommand({
@@ -200,9 +199,23 @@ export default class AdamantinePickPlugin extends Plugin {
 	async loadSettings(): Promise<void>  {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
-
+	
+	private getdarkmodeflag() 
+	{
+		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
+		let dark_mode_flag = 0x0002;
+		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
+		return dark_mode_flag;
+	}
+	
 	async saveSettings(): Promise<void>  {
 		
+	this.diagram_processor.render_type = this.settings.encoder_type;
+	this.diagram_processor.dark_mode = this.getdarkmodeflag();
+	this.diagram_processor.dom_mark = this.settings.output_dom_mark;
+	this.diagram_processor.report = this.settings.output_diagram_stats;
+	this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
+	
 		await this.saveData(this.settings);
 	}
 	
@@ -416,7 +429,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 		
 		new Setting(containerEl)
 			.setName('Sample')
-			.setDesc('Create once one builtin sample diagram note on next load')
+			.setDesc('Create once one builtin sample diagram note(requires plugin reload)')
 			.addDropdown(dropDown => {
 				dropDown.addOption('1', 'Cheat Sheet');
 				dropDown.addOption('2', 'Palindrome');
@@ -443,7 +456,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			
 		new Setting(containerEl)
 			.setName('Markdown Code Block Identifier')
-			.setDesc('What markdown code blocks to render')
+			.setDesc('What markdown code blocks to render(requires plugin reload)')
 			.addText(text => text
 				.setPlaceholder('pikchr pick')
 				.setValue(this.plugin.settings.block_identify[0])
@@ -494,7 +507,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			})
 		new Setting(containerEl)
 			.setName('Use local adamantine diagram notes JSON')
-			.setDesc('admantine-diagram-notes.json from plugin folder(for testing)')
+			.setDesc('admantine-diagram-notes.json from plugin folder(for debug testing)')
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.decode_locally);
 				cb.onChange(async (value: boolean) => {
