@@ -90,6 +90,11 @@ export class AdamantinePickProcessor implements Processor {
 	
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
 		const length = source.length;	
+		if ((length <=30) && (source == "<!-- empty pikchr diagram -->\n")) {
+			el.createEl("span",{ text: source});
+			el.createEl("span",{ text: "[Adamantine Pick] Empty diagram returned"}); 
+			return;
+		}		
 		const parser = new DOMParser();
 		const svg = parser.parseFromString(source, "text/html");
 		const links = svg.getElementsByTagName("a");
@@ -153,8 +158,8 @@ export default class AdamantinePickPlugin extends Plugin {
 		const preserve = this.settings.preserve_diagram_debug_print;
 		const render_type = this.settings.encoder_type;
 		this.diagram_processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
-		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);		
-
+		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);	
+		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
 		this.addCommand({
 			id: 'pick-adamantine-notes',
@@ -210,11 +215,11 @@ export default class AdamantinePickPlugin extends Plugin {
 	
 	async saveSettings(): Promise<void>  {
 		
-	this.diagram_processor.render_type = this.settings.encoder_type;
-	this.diagram_processor.dark_mode = this.getdarkmodeflag();
-	this.diagram_processor.dom_mark = this.settings.output_dom_mark;
-	this.diagram_processor.report = this.settings.output_diagram_stats;
-	this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
+		this.diagram_processor.render_type = this.settings.encoder_type;
+		this.diagram_processor.dark_mode = this.getdarkmodeflag();
+		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
+		this.diagram_processor.report = this.settings.output_diagram_stats;
+		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
 	
 		await this.saveData(this.settings);
 	}
