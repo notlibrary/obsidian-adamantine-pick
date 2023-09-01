@@ -49,6 +49,7 @@ mins = time / 60
 
 circle rad 0.5
 circle invis rad 0.6 at first circle.c
+circle rad 0.7 at first circle.c
 arrow thick from first circle go 90% heading hours*30 
 arrow from first circle go heading mins*6
 arrow dashed thin from first circle go heading time*6

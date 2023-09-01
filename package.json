@@ -7,7 +7,7 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"pikchr": "emcc src/pick.c -Wall -Wextra -lm -O3 --memory-init-file 0 --closure 1 -sSTRICT_JS=1 -sWASM=0 -sTOTAL_STACK=131072 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js",
+		"pikchr": "emcc src/pick.c -Wall -Wextra -lm -O3 --memory-init-file 0 --closure 1 -sSTRICT_JS=1 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sTOTAL_STACK=131072 -sENVIRONMENT=web -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js",
 		"notes": "node encode-notes.mjs"
 	},
 	"keywords": [
