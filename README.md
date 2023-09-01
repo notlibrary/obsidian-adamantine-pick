@@ -190,7 +190,7 @@ with encoded diagram and even leaves some more free space for others
 Common output mime-type `image/svg+xml` makes it easy negotiatable and 
 decodable anywhere by anyone
 
-*tl, dr:* for those who read it to the end "BanKan" and clock diagrams
+*tl, dr:* for those who read it to the end "BanKan"
 
 	```pikchr
 	box "DONE"; box "IN" ; box "DO" ; down; move from first box.n
@@ -199,7 +199,9 @@ decodable anywhere by anyone
 	IN: box "Random"
 	DO: box "Task 1" "Task 2" "Task 3"
 	```
-	
+
+and clock diagrams
+ 
 	```pikchr
 	hours =  time / 3600 
 	mins = time / 60
