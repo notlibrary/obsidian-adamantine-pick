@@ -41,7 +41,11 @@ export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 export interface AdamantineDiagramNote {
 	filename: string;
 	base64content: string;
+	bytessize: number;
 	sha256digest: string;
+	timestamp: string;
+	encoder: string;
+	encoderversion: string; 
 }
 
 export interface Processor {
@@ -59,7 +63,6 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_width: number;
 	timestamp: number;
 	preserve_diagram_debug_print: boolean;
-	
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
@@ -72,15 +75,20 @@ export class AdamantinePickProcessor implements Processor {
 	}
 	
     svg = async(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {	
-	
 		factory().then(
 			async (instance) => {
 				this.timestamp = Date.now();
 				const pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
 				const get_height = instance.cwrap('pick_height', 'number', ['number']);
-				const get_width = instance.cwrap('pick_width', 'number', ['number']);		
-				
-				this.encodedDiagram = pikchr(source,this.dom_mark,this.dark_mode);
+				const get_width = instance.cwrap('pick_width', 'number', ['number']);
+				const get_artifact_version = instance.cwrap('pick_version', 'string');				
+				const command = source.substring(source.lastIndexOf("\n") + 1);
+				let prepend = "";
+				if (command === "#?skip") { return; }
+				if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
+				if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n";}
+				if (command === "#?purple") {prepend = "fill=purple\n";}
+				this.encodedDiagram = pikchr(prepend + source,this.dom_mark,this.dark_mode);
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
 				await this.diagram_handler(this.encodedDiagram, el, ctx);	
@@ -261,7 +269,7 @@ export default class AdamantinePickPlugin extends Plugin {
 						const filename = normalizePath(output_folder + "/" + element.filename + ".md");
 						const sha256digest = element.sha256digest;
 						const decoded: string = Buffer.from(element.base64content, 'base64').toString();
-						const sha256in = crypto.createHash('sha256').update(decoded).digest('hex').toString();  
+						const sha256in = crypto.createHash('sha256').update(decoded).digest('hex');  
 						console.log(sha256in);
 						if ( sha256digest === sha256in) {
 							console.log('SHA256 check success: ' + filename);

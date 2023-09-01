@@ -142,7 +142,7 @@ npm run pikchr
 The compiler one-liner is this
 
 ```
-emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O2 --memory-init-file 0 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
+emcc src/pick.c -DPIKCHR_SHELL -Wall -Wextra -lm -O2 --memory-init-file 0 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
 ```
 
 Encode `adamantine-diagram-notes.json` database

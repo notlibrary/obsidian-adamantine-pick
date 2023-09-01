@@ -16,6 +16,7 @@
 */
 
 #include "pikchr.c"
+#define SOURCE_ARTIFACT_SHA3_HEX "64bf5f887424481b5f716f0b9d5f0cc5b83db97b34c1d4c60b5a92b248c1666b"
 #define PICK_CALL
 #define PICK_MAGIC_DIMENSION 128
 #define PICK_TRANSLATION_UNIT_ID "pick.js"
@@ -62,5 +63,15 @@ pick(const char *zText, const char *zClass, unsigned int mFlags)
 	
 	return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
 }
+
+PICK_CALL const char*
+pick_version()
+{
+	const char* artifact_sha3_hex = SOURCE_ARTIFACT_SHA3_HEX;
+	return artifact_sha3_hex;
+}
+
 #undef PICK_CALL
+#undef PICK_MAGIC_DIMENSION
 #undef PICK_TRANSLATION_UNIT_ID
+#undef SOURCE_ARTIFACT_SHA3_HEX

@@ -41,5 +41,25 @@ Caption: text "0x7C00 0xDEADBEEF 0xCAFEBABE" mono with .s at 0.1cm above ENCODER
 
 ```
 GDT IDT MMU MBR GPT ROM BIOS UEFI SSE MMX XOR EAX EAX 
-To much acronyms to fit everything in 4KB *iret*
+To much acronyms to fit everything in 4KB *iret* time waits no one I guess
+
+```pikchr
+hours =  time / 3600 
+mins = time / 60
+
+circle rad 0.5
+circle invis rad 0.6 at first circle.c
+arrow thick from first circle go 90% heading hours*30 
+arrow from first circle go heading mins*6
+arrow dashed thin from first circle go heading time*6
+dot at first circle
+text "XII" at 0.1 above first circle.n
+text "VI" at 0.1 below first circle.s
+text "III" at 2nd circle.e
+text "IX" at 2nd circle.w
+#"Banshee" control sequence markdown postprocessor clock example
+#works only in obsidian editing mode "time not found" error in preview 
+#?time
+```
+
 #adamantine 
