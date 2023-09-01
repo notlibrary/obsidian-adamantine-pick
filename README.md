@@ -190,7 +190,7 @@ with encoded diagram and even leaves some more free space for others
 Common output mime-type `image/svg+xml` makes it easy negotiatable and 
 decodable anywhere by anyone
 
-*tl, dr:* for those who read it to the end "BanKan" diagram
+*tl, dr:* for those who read it to the end "BanKan" and clock diagrams
 
 	```pikchr
 	box "DONE"; box "IN" ; box "DO" ; down; move from first box.n
@@ -200,5 +200,21 @@ decodable anywhere by anyone
 	DO: box "Task 1" "Task 2" "Task 3"
 	```
 	
+	```pikchr
+	hours =  time / 3600 
+	mins = time / 60
+	circle rad 0.5
+	circle invis rad 0.6 at first circle.c
+	arrow thick from first circle go 90% heading hours*30 
+	arrow from first circle go heading mins*6
+	arrow dashed thin from first circle go heading time*6
+	dot at first circle
+	text "XII" at 0.1 above first circle.n
+	text "VI" at 0.1 below first circle.s
+	text "III" at 2nd circle.e
+	text "IX" at 2nd circle.w
+	#?time
+	```
+
 *P.S.* Although not best practice because "Digital? Every Idiot Can Count to One"(c) 
 I pushed my lame memo test OPamp circuit diagram note into separate `src/opamp.md`

@@ -53,6 +53,11 @@ export interface Processor {
 
 }
 
+export interface Postprocessor {
+    svg: (el: HTMLElement, ctx: MarkdownPostProcessorContext) => void;
+
+}
+
 export class AdamantinePickProcessor implements Processor {
 	render_type: number;
 	dark_mode: number;
@@ -63,6 +68,7 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_width: number;
 	timestamp: number;
 	preserve_diagram_debug_print: boolean;
+	prepend: string;
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
@@ -72,9 +78,12 @@ export class AdamantinePickProcessor implements Processor {
 		this.encodedDiagram = "";
 		this.diagram_height = 0;
 		this.diagram_width = 0;
+		this.prepend = "";
 	}
-	
-    svg = async(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {	
+
+    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		let encodedDiagram = "";
+		this.encodedDiagram = "";
 		factory().then(
 			async (instance) => {
 				this.timestamp = Date.now();
@@ -86,17 +95,20 @@ export class AdamantinePickProcessor implements Processor {
 				let prepend = "";
 				if (command === "#?skip") { return; }
 				if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
-				if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n";}
+				if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; this.prepend = prepend;}
 				if (command === "#?purple") {prepend = "fill=purple\n";}
-				this.encodedDiagram = pikchr(prepend + source,this.dom_mark,this.dark_mode);
+				encodedDiagram = pikchr(prepend + this.prepend + source,this.dom_mark,this.dark_mode);
+				
+				this.encodedDiagram = encodedDiagram;
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
-				await this.diagram_handler(this.encodedDiagram, el, ctx);	
+				await this.diagram_handler (this.encodedDiagram, el, ctx);	
 			}
 		);		
 	}
 	
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
+		
 		const length = source.length;	
 		if ((length <=30) && (source == "<!-- empty pikchr diagram -->\n")) {
 			el.createEl("span",{ text: source});
@@ -147,15 +159,21 @@ export class AdamantinePickProcessor implements Processor {
 		
 		}
 	}
+	
+}
 
-
+export class AdamantinePickPostProcessor implements Postprocessor {
+	
+	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {	
+		console.log("postprocessor"); return;
+	}
 }
 
 export default class AdamantinePickPlugin extends Plugin {
 	diagram_processor: AdamantinePickProcessor;
+	banshee: AdamantinePickPostProcessor;
 	settings: AdamantinePickSettings;
 	total_builtin_samples = 4;
-	
 	async onload(): Promise<void> {
 		console.log('loading adamantine pick plugin')
 		await this.loadSettings();
@@ -166,7 +184,9 @@ export default class AdamantinePickPlugin extends Plugin {
 		const preserve = this.settings.preserve_diagram_debug_print;
 		const render_type = this.settings.encoder_type;
 		this.diagram_processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
-		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);	
+		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
+		this.banshee = new AdamantinePickPostProcessor();
+		this.registerMarkdownPostProcessor(this.banshee.svg);	
 		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
 		this.addCommand({
