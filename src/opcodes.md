@@ -41,7 +41,7 @@ Caption: text "0x7C00 0xDEADBEEF 0xCAFEBABE" mono with .s at 0.1cm above ENCODER
 
 ```
 GDT IDT MMU MBR GPT ROM BIOS UEFI SSE MMX XOR EAX EAX 
-To much acronyms to fit everything in 4KB *iret* time waits no one I guess
+To much acronyms to fit everything in 4KB *iret* time waits for no one I guess
 
 ```pikchr
 hours =  time / 3600 
@@ -58,7 +58,7 @@ text "VI" at 0.1 below first circle.s
 text "III" at 2nd circle.e
 text "IX" at 2nd circle.w
 #"Banshee" control sequence markdown postprocessor clock example
-#works only in obsidian editing mode "time not found" error in preview 
+#Reverse unix shebang imitator works only in obsidian
 #?time
 ```
 
