@@ -14,9 +14,13 @@
 	and cwrap method to get/set it from javascript/typescript
 	[typescript/javascript method] <- [pick] -> [pointer pikchr]
 */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "pikchr.c"
 #define SOURCE_ARTIFACT_SHA3_HEX "64bf5f887424481b5f716f0b9d5f0cc5b83db97b34c1d4c60b5a92b248c1666b"
+#define PICK_NAME "Adamantine Pick"
 #define PICK_CALL
 #define PICK_MAGIC_DIMENSION 128
 #define PICK_TRANSLATION_UNIT_ID "pick.js"
@@ -57,17 +61,25 @@ pick(const char *zText, const char *zClass, unsigned int mFlags)
 {
 	int* pickHeight = NULL;
 	int* pickWidth = NULL;
+	static unsigned int counter = 0;
 	
 	pick_height(&pickHeight);
 	pick_width(&pickWidth);
 	
-	return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
+	if ( zText != NULL ) { 
+		counter++;
+		return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
+	}
+	
+	return NULL;
 }
 
 PICK_CALL const char*
 pick_version()
 {
 	const char* artifact_sha3_hex = SOURCE_ARTIFACT_SHA3_HEX;
+	unsigned int V = 0x0D0C0B0A;
+	char is_wrong_endian =  ( *(char*)(&V) == 0x0A ) ? 1 : 0;
 	return artifact_sha3_hex;
 }
 
@@ -75,3 +87,8 @@ pick_version()
 #undef PICK_MAGIC_DIMENSION
 #undef PICK_TRANSLATION_UNIT_ID
 #undef SOURCE_ARTIFACT_SHA3_HEX
+#undef PICK_NAME
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

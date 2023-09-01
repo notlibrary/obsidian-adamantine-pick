@@ -102,7 +102,7 @@ export class AdamantinePickProcessor implements Processor {
 				this.encodedDiagram = encodedDiagram;
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
-				await this.diagram_handler (this.encodedDiagram, el, ctx);	
+				await this.diagram_handler (encodedDiagram, el, ctx);	
 			}
 		);		
 	}
@@ -165,7 +165,6 @@ export class AdamantinePickProcessor implements Processor {
 export class AdamantinePickPostProcessor implements Postprocessor {
 	
 	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {	
-		console.log("postprocessor"); return;
 	}
 }
 
