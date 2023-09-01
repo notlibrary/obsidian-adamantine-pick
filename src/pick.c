@@ -17,7 +17,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#define NDEBUG 1
 #include "pikchr.c"
 #define SOURCE_ARTIFACT_SHA3_HEX "64bf5f887424481b5f716f0b9d5f0cc5b83db97b34c1d4c60b5a92b248c1666b"
 #define PICK_NAME "Adamantine Pick"
