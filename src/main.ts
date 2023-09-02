@@ -470,6 +470,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				dropDown.addOption('1', 'SVG');
 				dropDown.addOption('2', 'Text');
 				dropDown.addOption('3', 'Dummy');
+				dropDown.setValue(this.plugin.settings.encoder_type.toString());
 				dropDown.onChange(async (value) =>	{
 					console.log('render type: ' + value);
 					this.plugin.settings.encoder_type = parseInt(value);
@@ -485,6 +486,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				dropDown.addOption('2', 'Palindrome');
 				dropDown.addOption('3', 'Triforce');
 				dropDown.addOption('4', 'None');
+				dropDown.setValue(this.plugin.settings.sample_to_render.toString());
 				dropDown.onChange(async (value) =>	{
 					console.log('render builtin sample: ' + value);
 					this.plugin.settings.sample_to_render = parseInt(value);

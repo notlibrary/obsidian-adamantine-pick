@@ -44,7 +44,8 @@ GDT IDT MMU MBR GPT ROM BIOS UEFI SSE MMX XOR EAX EAX
 To much acronyms to fit everything in 4KB *iret* time waits for no one I guess
 
 ```pikchr
-hours =  time / 3600 
+gmt = 0
+hours =  time / 3600 + gmt 
 mins = time / 60
 
 circle rad 0.5

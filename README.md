@@ -203,7 +203,8 @@ decodable anywhere by anyone
 and clock diagrams
  
 	```pikchr
-	hours =  time / 3600 
+	gmt = 0
+	hours =  time / 3600 + gmt
 	mins = time / 60
 	circle rad 0.5
 	circle invis rad 0.6 at first circle.c
