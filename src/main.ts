@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
-import { Buffer } from "buffer";
-import * as crypto from "crypto";
+import sha256 from 'crypto-js/sha256';
 import factory = require("./pick.js");
+
 
 declare module "obsidian" {
 	interface Vault {
@@ -251,6 +251,17 @@ export default class AdamantinePickPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 	
+	private decodeBase64(base64) {
+		const input_text = atob(base64);
+		const length = input_text.length;
+		const bytes = new Uint8Array(length);
+		for (let i = 0; i < length; i++) {
+			bytes[i] = input_text.charCodeAt(i);
+		}
+		const decoder = new TextDecoder(); /* utf-8 default */
+		return decoder.decode(bytes);
+	}	
+	
 	private async pick_adamantine_notes(): Promise<void>
 	{
 			const json_name = "adamantine-diagram-notes.json";
@@ -275,21 +286,28 @@ export default class AdamantinePickPlugin extends Plugin {
 			}
 			catch (error) {
 				console.log(error.toString());
-			}		
+			}
+			
 			
 			try {
 				const response: RequestUrlResponse = await requestUrl(options); 			
 				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
+			
 				if (this.settings.decode_locally) { console.log('download zip instead'); /* Read permissions import, nah */ }
 				
-				adamantine_notes.forEach(async element => {
+				adamantine_notes.forEach(async diagram_note => {
 					try {
-						const output_folder = normalizePath(this.settings.adamantine_dir); 
-						const filename = normalizePath(output_folder + "/" + element.filename + ".md");
-						const sha256digest = element.sha256digest;
-						const decoded: string = Buffer.from(element.base64content, 'base64').toString();
-						const sha256in = crypto.createHash('sha256').update(decoded).digest('hex');  
-						console.log(sha256in);
+						
+						let filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
+						let sha256digest = diagram_note.sha256digest;
+						console.log("Filename: " + diagram_note.filename);
+						/* 
+							This fails on Android
+							let decoded = Buffer.from(diagram_note.base64content, 'base64').toString('utf8');  
+							let sha256in = crypto.createHash('sha256').update(decoded).digest('hex'); 
+						*/   
+						let decoded = this.decodeBase64(diagram_note.base64content);
+						let sha256in = sha256(decoded).toString();
 						if ( sha256digest === sha256in) {
 							console.log('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);
