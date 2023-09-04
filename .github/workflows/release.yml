@@ -25,20 +25,21 @@ jobs:
       - name: Build
         id: build
         run: |
+          dog_tag=$(git tag --sort version:refname | tail -n 1)
           npm install
           npm run pikchr
           npm run build
           npm run notes
           mkdir ${{ env.PLUGIN_NAME }}
           cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
+          zip -r ${{ env.PLUGIN_NAME }}-$dog_tag.zip ${{ env.PLUGIN_NAME }}
           pushd src
           zip -R ${{ env.NOTES_NAME}}.zip '*.md'
           popd
           ls
-          echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
+          echo "tag_name=$dog_tag" >> $GITHUB_OUTPUT
 
-      - name: Release
+      - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
