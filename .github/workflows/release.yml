@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - "*"
-#on:
-#  workflow_dispatch:
-# A working build server sigh... 
 
 env:
   PLUGIN_NAME: adamantine-pick
@@ -21,9 +18,9 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name : Use emcc
-        uses: mymindstorm/setup-emsdk@v11
+        uses: mymindstorm/setup-emsdk@v12
 
       - name: Build
         id: build
@@ -41,81 +38,19 @@ jobs:
           ls
           echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Create Release
+      - name: Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ github.ref }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
           body: "Adamantine Pick Plugin for Obsidian"
-
-      - name: Upload zip file
-        id: upload-zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.PLUGIN_NAME }}.zip
-          asset_name: ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload main.js
-        id: upload-main
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./main.js
-          asset_name: main.js
-          asset_content_type: text/javascript
-
-      - name: Upload manifest.json
-        id: upload-manifest
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./manifest.json
-          asset_name: manifest.json
-          asset_content_type: application/json
-
-      - name: Upload styles.css
-        id: upload-css
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./styles.css
-          asset_name: styles.css
-          asset_content_type: text/css
-
-      - name: Upload adamantine notes zip file
-        id: upload-adamantine-zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/${{ env.NOTES_NAME }}.zip
-          asset_name: ${{ env.NOTES_NAME }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload adamantine notes JSON file
-        id: upload-adamantine-json
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.NOTES_NAME }}.json
-          asset_name: ${{ env.NOTES_NAME }}.json
-          asset_content_type: application/json
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: main.js |
+            styles.css
+            manifest.json
+            ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
+            ${{ env.NOTES_NAME }}.json
+            ${{ env.NOTES_NAME }}.zip
