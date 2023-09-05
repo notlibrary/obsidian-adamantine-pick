@@ -108,7 +108,7 @@ export class AdamantinePickProcessor implements Processor {
 				if (has_control_sequence) {
 					prepend = hashtable[source];
 					if (!prepend) {
-						if (command === "#?skip") { prepend = 'skip'; skip = true; }
+						if (command === "#?skip") { prepend = "skip"; skip = true; }
 						if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
 						if (command === "#?purple") {prepend = "fill=purple\n";}
 						hashtable[source] = prepend;
@@ -119,8 +119,13 @@ export class AdamantinePickProcessor implements Processor {
 				else { prepend = ""; }
 				
 				let encodedDiagram = "<!-- empty pikchr diagram -->\n";
-				if (command !== "#?skip") { encodedDiagram = pikchr(prepend + source,this.dom_mark,this.dark_mode); }
-				
+				let source_final = source;
+				skip = (prepend === "skip");
+				if (prepend && !skip) { source_final = prepend + source; }
+				if ( (command !== "#?skip") || (!skip))  {
+						encodedDiagram = pikchr(source_final,this.dom_mark,this.dark_mode); 
+				}
+		
 				this.encodedDiagram = encodedDiagram;
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
