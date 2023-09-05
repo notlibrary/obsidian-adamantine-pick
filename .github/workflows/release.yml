@@ -50,7 +50,7 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-          body: ${{ steps.build.output.release_body }}
+          body: ${{ steps.build.outputs.release_body }}
           token: ${{ secrets.GITHUB_TOKEN }}
           files: main.js |
             styles.css
