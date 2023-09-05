@@ -59,6 +59,7 @@ export interface Postprocessor {
 }
 
 export class AdamantinePickProcessor implements Processor {
+	plugin_ptr: AdamantinePickPlugin; 
 	render_type: number;
 	dark_mode: number;
 	dom_mark: string;
@@ -68,6 +69,7 @@ export class AdamantinePickProcessor implements Processor {
 	diagram_width: number;
 	timestamp: number;
 	preserve_diagram_debug_print: boolean;
+	postprocessor: AdamantinePickPostProcessor;
 	prepend: string;
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
@@ -79,29 +81,50 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_height = 0;
 		this.diagram_width = 0;
 		this.prepend = "";
+
 	}
 
-    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-		let encodedDiagram = "";
-		this.encodedDiagram = "";
+    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {		
 		factory().then(
 			async (instance) => {
 				this.timestamp = Date.now();
+				
 				const pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
 				const get_height = instance.cwrap('pick_height', 'number', ['number']);
 				const get_width = instance.cwrap('pick_width', 'number', ['number']);
 				const get_artifact_version = instance.cwrap('pick_version', 'string');				
-				const command = source.substring(source.lastIndexOf("\n") + 1);
+				
+				this.encodedDiagram = "";
+				/* 
+				   Space or newline at the end of file in reading mode in source at the end of codeblock 
+				   Source are different strings in reading and editing mode lol
+				*/
+				const command = source.substring(source.lastIndexOf("#")).trim(); 
+				const has_control_sequence = (command.substring(0, 2) === "#?");
+
+				const hashtable = this.postprocessor.visited;
 				let prepend = "";
-				if (command === "#?skip") { return; }
-				if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
-				if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; this.prepend = prepend;}
-				if (command === "#?purple") {prepend = "fill=purple\n";}
-				encodedDiagram = pikchr(prepend + this.prepend + source,this.dom_mark,this.dark_mode);
+				let skip = false;
+				if (has_control_sequence) {
+					prepend = hashtable[source];
+					if (!prepend) {
+						if (command === "#?skip") { prepend = 'skip'; skip = true; }
+						if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
+						if (command === "#?purple") {prepend = "fill=purple\n";}
+						hashtable[source] = prepend;
+					}
+					prepend = hashtable[source];
+					if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; }
+				}
+				else { prepend = ""; }
+				
+				let encodedDiagram = "<!-- empty pikchr diagram -->\n";
+				if (command !== "#?skip") { encodedDiagram = pikchr(prepend + source,this.dom_mark,this.dark_mode); }
 				
 				this.encodedDiagram = encodedDiagram;
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
+				
 				await this.diagram_handler (encodedDiagram, el, ctx);	
 			}
 		);		
@@ -164,6 +187,13 @@ export class AdamantinePickProcessor implements Processor {
 
 export class AdamantinePickPostProcessor implements Postprocessor {
 	
+	public visited:{ [index:string] : string }
+	
+	constructor( diagram_proc: AdamantinePickProcessor ) {
+		this.visited = {};
+		diagram_proc.postprocessor = this
+	
+	}
 	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {	
 	}
 }
@@ -173,6 +203,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	banshee: AdamantinePickPostProcessor;
 	settings: AdamantinePickSettings;
 	total_builtin_samples = 4;
+	
 	async onload(): Promise<void> {
 		console.log('loading adamantine pick plugin')
 		await this.loadSettings();
@@ -182,10 +213,14 @@ export default class AdamantinePickPlugin extends Plugin {
 		const report = this.settings.output_diagram_stats;
 		const preserve = this.settings.preserve_diagram_debug_print;
 		const render_type = this.settings.encoder_type;
+		
 		this.diagram_processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
+		this.diagram_processor.plugin_ptr = this;
+		this.banshee = new AdamantinePickPostProcessor(this.diagram_processor);
+		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
-		this.banshee = new AdamantinePickPostProcessor();
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
+		
 		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
 		this.addCommand({
@@ -251,7 +286,8 @@ export default class AdamantinePickPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 	
-	private decodeBase64(base64) {
+	private decodeBase64(base64) 
+	{
 		const input_text = atob(base64);
 		const length = input_text.length;
 		const bytes = new Uint8Array(length);
@@ -265,6 +301,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	private async pick_adamantine_notes(): Promise<void>
 	{
 			const json_name = "adamantine-diagram-notes.json";
+			const zip_name = "adamantine-diagram-notes.zip";
 			
 			const github_url = "https://github.com/notlibrary/obsidian-adamantine-pick/releases/download/";
 			const tag_string = this.manifest.version;
@@ -293,21 +330,17 @@ export default class AdamantinePickPlugin extends Plugin {
 				const response: RequestUrlResponse = await requestUrl(options); 			
 				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
 			
-				if (this.settings.decode_locally) { console.log('download zip instead'); /* Read permissions import, nah */ }
+				if (this.settings.decode_locally) { console.log('download ' + zip_name + ' instead'); /* Read permissions import, nah */ }
 				
-				adamantine_notes.forEach(async diagram_note => {
+				adamantine_notes.forEach(async ( diagram_note, i ) => {
 					try {
 						
-						let filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
-						let sha256digest = diagram_note.sha256digest;
-						console.log("Filename: " + diagram_note.filename);
-						/* 
-							This fails on Android
-							let decoded = Buffer.from(diagram_note.base64content, 'base64').toString('utf8');  
-							let sha256in = crypto.createHash('sha256').update(decoded).digest('hex'); 
-						*/   
-						let decoded = this.decodeBase64(diagram_note.base64content);
-						let sha256in = sha256(decoded).toString();
+						const filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
+						if ( diagram_note.filename.length > 8) { console.log( "Warning: not adamantine diagram note file name length > 8" + " index: " + i); }
+						const sha256digest = diagram_note.sha256digest; 
+						const decoded = this.decodeBase64(diagram_note.base64content);
+						if ( decoded.length > 4096 ) { console.log("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
+						const sha256in = sha256(decoded).toString();
 						if ( sha256digest === sha256in) {
 							console.log('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);

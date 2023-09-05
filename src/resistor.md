@@ -128,7 +128,7 @@ v "10 (Z)"
 
 move down 0.2 from 43th box.n 
 v "Vodka" ; right 
-v "Vilolet" fill violet
+v "Violet" fill violet
 v "7 7 7"
 v "x 10M"
 v "0.1% (B)" 
