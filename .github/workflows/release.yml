@@ -27,6 +27,7 @@ jobs:
         id: build
         run: |
           dog_tag=$(git tag --sort version:refname | tail -n 1)
+          release_changelog=$(sed -e '/^$/,$d' CHANGELOG | tail +2)
           npm install
           npm run pikchr
           npm run build
@@ -39,7 +40,8 @@ jobs:
           popd
           ls
           echo "tag_name=$dog_tag" >> $GITHUB_OUTPUT
-
+          echo "release_body=$release_changelog" >> $GITHUB_OUTPUT
+    
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -48,7 +50,7 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-          body: "Adamantine Pick Plugin for Obsidian"
+          body: ${{ steps.build.output.release_body }}
           token: ${{ secrets.GITHUB_TOKEN }}
           files: main.js |
             styles.css
