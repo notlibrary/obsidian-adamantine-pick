@@ -27,7 +27,7 @@ jobs:
         id: build
         run: |
           dog_tag=$(git tag --sort version:refname | tail -n 1)
-          release_changelog=$(sed -e '/^$/,$d' CHANGELOG | tail +2)
+          RELEASE_NOTES=$(sed -e '/^$/,$d' CHANGELOG | tail +2)
           npm install
           npm run pikchr
           npm run build
@@ -40,7 +40,9 @@ jobs:
           popd
           ls
           echo "tag_name=$dog_tag" >> $GITHUB_OUTPUT
-          echo "release_body=$release_changelog" >> $GITHUB_OUTPUT
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
@@ -50,7 +52,7 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-          body: ${{ steps.build.outputs.release_body }}
+          body: ${{ env.RELEASE_NOTES }}
           token: ${{ secrets.GITHUB_TOKEN }}
           files: main.js |
             styles.css
