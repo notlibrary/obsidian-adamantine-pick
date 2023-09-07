@@ -189,23 +189,26 @@ export class AdamantinePickProcessor implements Processor {
 export class AdamantinePickPostProcessor implements Postprocessor {
 	public visited:{ [index:string] : string };
 	dom_mark: string;
+	counter = 0;
 	constructor( diagram_proc: AdamantinePickProcessor, dom_mark ) {
 		this.visited = {};
 		this.dom_mark = dom_mark;
 		diagram_proc.postprocessor = this;
-	
+		this.counter = 0
 	}
 	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {
 		const selector = "svg." + this.dom_mark;
 		const postsvg = el.querySelectorAll<HTMLElement>(selector);
 		postsvg.forEach( ( diagram, i ) => {
-			diagram.id = 'postproc-diag-' + i;
+			const id_cnt = this.counter + i; 
+			diagram.id = 'postproc-diag-' + id_cnt; 
 			/* 
 			   Optional CSS style postprocessing if any goes here
 			   hide, color invert, transform, rotate, scale, fade in/out, opacity, glow, margin 
 			   mathjax, regex, animation, syntax highlighter, font, save to cloud, etc 
 			   notorious feature swamp
 			*/
+			this.counter++;
 		});		
 	}
 }
@@ -232,6 +235,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
+		this.registerEvent(this.app.workspace.on('file-open', (file) => { this.banshee.counter = 0;}));
 		
 		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
