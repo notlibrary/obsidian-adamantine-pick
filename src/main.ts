@@ -145,11 +145,6 @@ export class AdamantinePickProcessor implements Processor {
 		}		
 		const parser = new DOMParser();
 		const svg = parser.parseFromString(source, "text/html");
-		const links = svg.getElementsByTagName("a");
-		for (let i = 0; i < links.length; i++) {
-			const link = links[i];
-			link.addClass("internal-link");
-		}
 		
 		const diagrams = svg.getElementsByTagName("svg");
 		
@@ -186,20 +181,32 @@ export class AdamantinePickProcessor implements Processor {
 			}
 		
 		}
+		this.postprocessor.svg(el, ctx);
 	}
 	
 }
 
 export class AdamantinePickPostProcessor implements Postprocessor {
-	
-	public visited:{ [index:string] : string }
-	
-	constructor( diagram_proc: AdamantinePickProcessor ) {
+	public visited:{ [index:string] : string };
+	dom_mark: string;
+	constructor( diagram_proc: AdamantinePickProcessor, dom_mark ) {
 		this.visited = {};
-		diagram_proc.postprocessor = this
+		this.dom_mark = dom_mark;
+		diagram_proc.postprocessor = this;
 	
 	}
-	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {	
+	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {
+		const selector = "svg." + this.dom_mark;
+		const postsvg = el.querySelectorAll<HTMLElement>(selector);
+		postsvg.forEach( ( diagram, i ) => {
+			diagram.id = 'postproc-diag-' + i;
+			/* 
+			   Optional CSS style postprocessing if any goes here
+			   hide, color invert, transform, rotate, scale, fade in/out, opacity, glow, margin 
+			   mathjax, regex, animation, syntax highlighter, font, save to cloud, etc 
+			   notorious feature swamp
+			*/
+		});		
 	}
 }
 
@@ -210,10 +217,10 @@ export default class AdamantinePickPlugin extends Plugin {
 	total_builtin_samples = 4;
 	
 	async onload(): Promise<void> {
-		console.log('loading adamantine pick plugin')
+		console.log('loading adamantine pick plugin');
 		await this.loadSettings();
 		
-		const dark_mode_flag = this.getdarkmodeflag();
+		const dark_mode_flag = this.get_dark_mode_flag();
 		const dom_mark = this.settings.output_dom_mark;
 		const report = this.settings.output_diagram_stats;
 		const preserve = this.settings.preserve_diagram_debug_print;
@@ -221,7 +228,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		this.diagram_processor = new AdamantinePickProcessor(render_type, dark_mode_flag, dom_mark, report, preserve);
 		this.diagram_processor.plugin_ptr = this;
-		this.banshee = new AdamantinePickPostProcessor(this.diagram_processor);
+		this.banshee = new AdamantinePickPostProcessor(this.diagram_processor, dom_mark);
 		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
@@ -240,7 +247,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			
 			const dir = normalizePath(this.settings.samples_dir);
 			try {
-				await this.app.vault.createFolder(dir)
+				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
 				console.log(error.toString());
@@ -272,8 +279,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 	
-	private getdarkmodeflag() 
-	{
+	private get_dark_mode_flag() {
 		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
 		let dark_mode_flag = 0x0002;
 		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
@@ -283,7 +289,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	async saveSettings(): Promise<void>  {
 		
 		this.diagram_processor.render_type = this.settings.encoder_type;
-		this.diagram_processor.dark_mode = this.getdarkmodeflag();
+		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
 		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
 		this.diagram_processor.report = this.settings.output_diagram_stats;
 		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
@@ -291,8 +297,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 	
-	private decodeBase64(base64) 
-	{
+	private decode_base64(base64) {
 		const input_text = atob(base64);
 		const length = input_text.length;
 		const bytes = new Uint8Array(length);
@@ -303,8 +308,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		return decoder.decode(bytes);
 	}	
 	
-	private async pick_adamantine_notes(): Promise<void>
-	{
+	private async pick_adamantine_notes(): Promise<void> {
 			const json_name = "adamantine-diagram-notes.json";
 			const zip_name = "adamantine-diagram-notes.zip";
 			
@@ -320,11 +324,11 @@ export default class AdamantinePickPlugin extends Plugin {
 				headers: {
 					'Content-Type': 'application/json'
 				}
-			}
+			};
 			
 			const dir = normalizePath(output_folder);
 			try {
-				await this.app.vault.createFolder(dir)
+				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
 				console.log(error.toString());
@@ -343,7 +347,7 @@ export default class AdamantinePickPlugin extends Plugin {
 						const filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
 						if ( diagram_note.filename.length > 8) { console.log( "Warning: not adamantine diagram note file name length > 8" + " index: " + i); }
 						const sha256digest = diagram_note.sha256digest; 
-						const decoded = this.decodeBase64(diagram_note.base64content);
+						const decoded = this.decode_base64(diagram_note.base64content);
 						if ( decoded.length > 4096 ) { console.log("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
 						const sha256in = sha256(decoded).toString();
 						if ( sha256digest === sha256in) {
@@ -365,8 +369,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			console.log('successfully fetched');			
 	}
 	
-	private output_builtin_diagram(index: number)
-	{
+	private output_builtin_diagram(index: number) {
 		
 		const samples_list = this.settings.samples_list;
 		
@@ -393,8 +396,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		return src;
 	}
 	
-	private sample_triforce()
-	{
+	private sample_triforce() {
 		const src = 
 		`
 		color = black
@@ -408,12 +410,11 @@ export default class AdamantinePickPlugin extends Plugin {
 		C: [line thin go heading 150 then west close fill black ]
 		]
 		Caption: text "newfags can't triforce" italic with .n at 0.1cm above TRIFORCE.s
-		`
+		`;
 		return src;
 	}
 
-	private sample_palindrome()
-	{
+	private sample_palindrome() {
 		const palindrome = [
 		"Dennis","Nell","Edna","Leon","Nedra","Anita","Rolf","Nora",
 		"Alice","Carol","Leo","Jane","Reed","Dena","Dale","Basil",
@@ -423,7 +424,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		"Diane","Lynn","Ed","Eva","Dana","Lynne","Pearl","Isabel",
 		"Ada","Ned","Dee","Rena","Joel","Lora","Cecil","Aaron",
 		"Flora","Tina","Arden","Noel","and","Ellen","sinned"
-		]
+		];
 		const total = 63;
 		const width = 4;
 		let src = "";
@@ -445,8 +446,7 @@ export default class AdamantinePickPlugin extends Plugin {
 
 	}
 	
-	private sample_cheat_sheet()
-	{
+	private sample_cheat_sheet() {
 		const src = 
 		`
 		CHEAT_SHEET: [
@@ -483,7 +483,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		]
 		Border: box thin width CHEAT_SHEET.width+0.5in height CHEAT_SHEET.height+0.5in at CHEAT_SHEET.center
 		Caption: text "pikchr cheat sheet from 9001 previous oval" italic with .n at 0.1cm below CHEAT_SHEET.s
-		`	
+		`;
 		return src;
 	}	
 }
@@ -542,7 +542,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					this.plugin.settings.bleach_diagram = value;
 					await this.plugin.saveSettings();
 				});
-			})
+			});
 			
 		new Setting(containerEl)
 			.setName('Markdown Code Block Identifier')
@@ -582,7 +582,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					this.plugin.settings.preserve_diagram_debug_print = value;
 					await this.plugin.saveSettings();
 				});
-			})
+			});
 			
 		new Setting(containerEl)
 			.setName('Report status message after diagram into note')
@@ -594,7 +594,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					this.plugin.settings.output_diagram_stats = value;
 					await this.plugin.saveSettings();
 				});
-			})
+			});
 		new Setting(containerEl)
 			.setName('Use local adamantine diagram notes JSON')
 			.setDesc('admantine-diagram-notes.json from plugin folder(for debug testing)')
@@ -605,6 +605,6 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					this.plugin.settings.decode_locally = value;
 					await this.plugin.saveSettings();
 				});
-			})
+			});
 	}
 }
