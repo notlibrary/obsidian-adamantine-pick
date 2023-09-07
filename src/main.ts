@@ -359,18 +359,18 @@ export default class AdamantinePickPlugin extends Plugin {
 							await this.app.vault.create(filename, decoded);
 						}
 						else {
-							console.log('Failed SHA256 check');
+							console.log('Warning: not adamantine diagram note failed SHA256 check');
 						}
 					}
 					catch (error) {
-						console.log('failed to save' + error.toString());
+						console.log('failed to save ' + error.toString());
 					}
 				});	
 			}
 			catch(error) {
-				console.log('failed to fetch' + JSON.stringify(error));
+				console.log('failed to fetch ' + JSON.stringify(error));
 			}
-			console.log('successfully fetched');			
+			console.log('successfully fetched adamantine diagram notes');			
 	}
 	
 	private output_builtin_diagram(index: number) {

@@ -35,7 +35,6 @@ box "1"  mono
 
 Border: box thin width THEOREM.width+0.5in height THEOREM.height+0.5in at THEOREM.center
 Caption: text "Euclid's theorem" mono with .n at 0.1cm below THEOREM.s
-
 ```
 
 Note it's complete unsability zero utility in daily life

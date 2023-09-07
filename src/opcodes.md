@@ -38,7 +38,6 @@ box "S - scale" "I - index" "B - base" fit
 Border: box thin width ENCODER.width+0.5in height ENCODER.height+0.5in at ENCODER.center
 Caption: text "General x86 OP code structure" mono with .n at 0.1cm below ENCODER.s
 Caption: text "0x7C00 0xDEADBEEF 0xCAFEBABE" mono with .s at 0.1cm above ENCODER.n
-
 ```
 GDT IDT MMU MBR GPT ROM BIOS UEFI SSE MMX XOR EAX EAX 
 To much acronyms to fit everything in 4KB *iret* time waits for no one I guess
@@ -64,4 +63,4 @@ text "IX" at 2nd circle.w
 #?time
 ```
 
-#adamantine 
+#adamantine

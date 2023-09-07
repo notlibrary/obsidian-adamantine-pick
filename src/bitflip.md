@@ -37,4 +37,5 @@ concerning the Universe as numeric simulator It actual value varies from user de
 "The right man in the wrong place can make all the difference... in the world.
 So, wake up, Mr. Freeman. Wake up and smell the ashes." 
 — The G-Man, Half-Life 2
+
 #adamantine

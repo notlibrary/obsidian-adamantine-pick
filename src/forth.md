@@ -2,7 +2,7 @@
 tag: adamantine
 ---
 Exposes ancient Pi definition by calculating own code area in fp stack
-``` pikchr
+```pikchr
 FORTH: [
 	box ht 0.4 "lookup" "word" 
 	arrow 0.3
@@ -53,4 +53,5 @@ FORTH: [
                             Y F/ F. ; PIPI
 ```
 [Buy me a coffee test run in replit](https://replit.com/@notlibrary/Pi) ...adamantine diagram note and so forth
+
 #adamantine 

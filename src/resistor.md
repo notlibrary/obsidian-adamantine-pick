@@ -1,6 +1,6 @@
 ---
 tag: adamantine
---- 
+---
 Sample resistor color code calculator cheat sheet adamantine diagram note
 Install [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin and view this note through Obsidian
 
@@ -176,4 +176,5 @@ v "20% (M)"
 v
 line from BORDER.sw to BORDER.se
 ```
+
 #adamantine
