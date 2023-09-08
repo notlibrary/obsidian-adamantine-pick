@@ -1,7 +1,8 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 import sha256 from 'crypto-js/sha256';
-import factory = require("./pick.js");
 
+declare function require(name:string);
+import factory = require("./pick.js");
 
 declare module "obsidian" {
 	interface Vault {
@@ -203,10 +204,19 @@ export class AdamantinePickPostProcessor implements Postprocessor {
 			const id_cnt = this.counter + i; 
 			diagram.id = 'postproc-diag-' + id_cnt; 
 			/* 
-			   Optional CSS style postprocessing if any goes here
-			   hide, color invert, transform, rotate, scale, fade in/out, opacity, glow, margin 
-			   mathjax, regex, animation, syntax highlighter, font, save to cloud, etc 
-			   notorious feature swamp
+			   Optional style postprocessing if any goes here
+			   hide, color invert, transform, rotate, scale, fade in/out, opacity, glow, blur, 
+			   margin, mathjax, regex, animation, syntax highlighter, font, save to cloud etc...
+			   
+			   Notorious feature swamp random list of absurd orders like rotate 90 deg 3rd diagram 
+			   then blur 12th then hide 4th then glow diagram that has cat in it then render
+			   Schrodinger equation in diagram 42 
+			   Note that it goes after they fixed 9000th oval in diagram source itself lol
+			   
+			   So I just set id to each object on file open and leave it be as is 
+			   Write custom CSS snippet if you want target individual diagram
+			   
+			   tl,dr: YAGNI
 			*/
 			this.counter++;
 		});		
@@ -235,7 +245,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
-		this.registerEvent(this.app.workspace.on('file-open', (file) => { this.banshee.counter = 0;}));
+		this.registerEvent(this.app.workspace.on('file-open', () => { this.banshee.counter = 0;}));
 		
 		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
@@ -246,8 +256,11 @@ export default class AdamantinePickPlugin extends Plugin {
 			callback: () => { this.pick_adamantine_notes(); },
 		});
 		
-
-		if (this.settings.sample_to_render < this.total_builtin_samples) {
+		this.note_builtin_diagram();
+	}
+	
+	private async note_builtin_diagram() {
+			if (this.settings.sample_to_render < this.total_builtin_samples) {
 			
 			const dir = normalizePath(this.settings.samples_dir);
 			try {
@@ -258,8 +271,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			}
 			
 			const samples_list = this.settings.samples_list;
-			let arr_in = 0;
-			arr_in = this.settings.sample_to_render;
+			const arr_in = this.settings.sample_to_render;
 			const filename = normalizePath(dir + "/" + samples_list[arr_in - 1] + ".md");
 			
 			const sample_content = this.output_builtin_diagram(arr_in);
@@ -273,7 +285,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			}
 		}
 	}
-
+	
 	async onunload(): Promise<void> {
 		console.log('unloading adamantine pick plugin');
 		

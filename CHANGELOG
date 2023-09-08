@@ -1,3 +1,9 @@
+8-Sep 2023 0.4.9
+Adamantine Pick Plugin for Obsidian
+Diagram postprocessor improvements with CSS SVG postprocessing
+Code refactoring and minor fixes
+Updated internal release actions
+
 1-Sep 2023 0.4.8
 Adamantine Pick Plugin for Obsidian
 Added diagram postprocessor commands and clock diagram note support
