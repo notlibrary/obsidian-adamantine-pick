@@ -37,6 +37,7 @@ jobs:
           zip -r ${{ env.PLUGIN_NAME }}-$dog_tag.zip ${{ env.PLUGIN_NAME }}
           pushd src
           zip -R ${{ env.NOTES_NAME}}.zip '*.md'
+          mv ${{ env.NOTES_NAME}}.zip ..
           popd
           ls
           echo "tag_name=$dog_tag" >> $GITHUB_OUTPUT
@@ -60,4 +61,4 @@ jobs:
             manifest.json
             ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
             ${{ env.NOTES_NAME }}.json
-            src/${{ env.NOTES_NAME }}.zip
+            ${{ env.NOTES_NAME }}.zip
