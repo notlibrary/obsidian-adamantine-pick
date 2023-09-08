@@ -17,7 +17,7 @@ jobs:
         token: ${{secrets.PAT}} # use a personal acces token so that other actions can trigger
     # Bump the version number
     - name: Update Version
-      uses: MCKanpolat/auto-semver-action@1.0.8
+      uses: MCKanpolat/auto-semver-action@1.0.10
       id: version
       with:
         releaseType: ${{ github.event.inputs.type }}
