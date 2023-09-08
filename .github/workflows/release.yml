@@ -54,7 +54,8 @@ jobs:
           prerelease: false
           body: ${{ env.RELEASE_NOTES }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: main.js |
+          files: |
+            main.js
             styles.css
             manifest.json
             ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
