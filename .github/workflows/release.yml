@@ -49,7 +49,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: ${{ github.ref }}
+          name: ${{ steps.build.outputs.tag_name }} 
           draft: false
           prerelease: false
           body: ${{ env.RELEASE_NOTES }}
@@ -60,4 +60,4 @@ jobs:
             manifest.json
             ${{ env.PLUGIN_NAME }}-${{ steps.build.outputs.tag_name }}.zip
             ${{ env.NOTES_NAME }}.json
-            ${{ env.NOTES_NAME }}.zip
+            src/${{ env.NOTES_NAME }}.zip
