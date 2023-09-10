@@ -1,15 +1,57 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 import sha256 from 'crypto-js/sha256';
+/*
+	declare function require(name:string);
+	import factory = require("./pick.js");
+	Evade node.js 
+*/
+import { default as wasmbin } from './pick.wasm';
 
-declare function require(name:string);
-import factory = require("./pick.js");
 
+const env = {
+    memoryBase: 0,
+    tableBase: 0,
+    memory: new WebAssembly.Memory({
+      initial: 0
+    }),
+    table: new WebAssembly.Table({
+      initial: 0,
+      element: 'anyfunc'
+    })
+  } 
 declare module "obsidian" {
 	interface Vault {
 		setConfig: (config: string, newValue: string) => void;
 		getConfig: (config: string) => string;
 	}
 }
+/* Some glue meh */
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+export const createCString = (module, str) => {
+		const nullTerminatedString = str + "\0";
+		const encodedString = textEncoder.encode(nullTerminatedString);
+		const address = module.instance.exports.malloc(encodedString.length);
+		try {
+			const destination = new Uint8Array(module.instance.exports.memory.buffer, address);
+			destination.set(encodedString);
+			return address;
+		} finally {
+		}
+	};
+export const readStaticCString = (module, address) => {
+		const buffer = module.instance.exports.memory.buffer;
+		const encodedStringLength = (new Uint8Array(buffer, address)).indexOf(0);
+		const encodedStringBuffer = new Uint8Array(buffer, address, encodedStringLength);
+		return textDecoder.decode(encodedStringBuffer);
+	};
+export const receiveCString = (module, address) => {
+		try {
+			return readStaticCString(module, address);
+		} finally {
+			module.instance.exports.free(address);
+		}
+	};
 
 export interface AdamantinePickSettings {
 	block_identify: string[];
@@ -84,17 +126,25 @@ export class AdamantinePickProcessor implements Processor {
 		this.prepend = "";
 
 	}
+	
 
-    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {		
-		factory().then(
-			async (instance) => {
+    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		/*factory().then(
+			async (instance) => { */
+				 WebAssembly.instantiate(wasmbin, env).then( async (factory) => {
+			     const pikchr = factory.instance.exports.pick;
+				 const get_height = factory.instance.exports.pick_height;
+				 const get_width = factory.instance.exports.pick_width;
+				 const get_artifact_version = factory.instance.exports.pick_version;	
+				
 				this.timestamp = Date.now();
 				
-				const pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
-				const get_height = instance.cwrap('pick_height', 'number', ['number']);
-				const get_width = instance.cwrap('pick_width', 'number', ['number']);
-				const get_artifact_version = instance.cwrap('pick_version', 'string');				
-				
+			    /* 
+			    const pikchr = factory.instance.cwrap('pick', 'string', ['string','string','number']);
+			    const get_height = factory.instance.cwrap('pick_height', 'number', ['number']);
+			    const get_width = factory.instance.cwrap('pick_width', 'number', ['number']);
+			    const get_artifact_version = factory.instance.cwrap('pick_version', 'string');				
+				*/
 				this.encodedDiagram = "";
 				/* 
 				   Space or newline at the end of file in reading mode in source at the end of codeblock 
@@ -110,7 +160,11 @@ export class AdamantinePickProcessor implements Processor {
 					prepend = hashtable[source];
 					if (!prepend) {
 						if (command === "#?skip") { prepend = "skip"; skip = true; }
-						if (command === "#?diag") {const artifact_sha3 = get_artifact_version(); prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n"; }
+						if (command === "#?diag") {
+							const artifact_sha3_ptr = get_artifact_version(); 
+							const artifact_sha3 = readStaticCString(factory,artifact_sha3_ptr);
+							prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n";
+						}
 						if (command === "#?purple") {prepend = "fill=purple\n";}
 						hashtable[source] = prepend;
 					}
@@ -123,17 +177,18 @@ export class AdamantinePickProcessor implements Processor {
 				let source_final = source;
 				skip = (prepend === "skip");
 				if (prepend && !skip) { source_final = prepend + source; }
-				if ( (command !== "#?skip") || (!skip))  {
-						encodedDiagram = pikchr(source_final,this.dom_mark,this.dark_mode); 
+				if ( (command !== "#?skip") || (!skip))  {	
+						const source_final_ptr = createCString(factory, source_final);
+						const encodedDiagram_ptr = pikchr(source_final_ptr,this.dom_mark,this.dark_mode); 
+						encodedDiagram = receiveCString(factory,encodedDiagram_ptr);						
 				}
 		
 				this.encodedDiagram = encodedDiagram;
 				this.diagram_height = get_height(0);
 				this.diagram_width = get_width(0);
 				
-				await this.diagram_handler (encodedDiagram, el, ctx);	
-			}
-		);		
+				await this.diagram_handler (encodedDiagram, el, ctx);		
+			});
 	}
 	
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				

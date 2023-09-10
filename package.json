@@ -1,13 +1,14 @@
 {
 	"name": "obsidian-adamantine-pick",
-	"version": "0.4.8",
+	"version": "0.4.9",
 	"description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit && node esbuild.config.mjs production",
+		"build": "node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"pikchr": "emcc src/pick.c -Wall -Wextra -lm -O3 --memory-init-file 0 --closure 1 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sTOTAL_STACK=131072 -sENVIRONMENT=web -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js",
+		"pick": "emcc src/pick.c -Wall -Wextra -lm -O3 --no-entry -DNDEBUG --minify=0 -sMODULARIZE=0 -sWASM=1 -sSTANDALONE_WASM=1 -sTOTAL_STACK=131072 -sENVIRONMENT=web -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version,_malloc,_free -o src/pick.wasm",
 		"notes": "node encode-notes.mjs"
 	},
 	"keywords": [
