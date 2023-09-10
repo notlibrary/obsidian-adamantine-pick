@@ -131,11 +131,11 @@ export class AdamantinePickProcessor implements Processor {
     svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		/*factory().then(
 			async (instance) => { */
-				 WebAssembly.instantiate(wasmbin, env).then( async (factory) => {
-			     const pikchr = factory.instance.exports.pick;
-				 const get_height = factory.instance.exports.pick_height;
-				 const get_width = factory.instance.exports.pick_width;
-				 const get_artifact_version = factory.instance.exports.pick_version;	
+				WebAssembly.instantiate(wasmbin, env).then( async (factory) => {
+			    const pikchr = factory.instance.exports.pick;
+				const get_height = factory.instance.exports.pick_height;
+				const get_width = factory.instance.exports.pick_width;
+				const get_artifact_version = factory.instance.exports.pick_version;	
 				
 				this.timestamp = Date.now();
 				

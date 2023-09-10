@@ -66,12 +66,13 @@ pick(const char *zText, const char *zClass, unsigned int mFlags)
 	pick_height(&pickHeight);
 	pick_width(&pickWidth);
 	
-	if ( zText != NULL ) { 
-		counter++;
-		return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
-	}
 	
-	return NULL;
+	//if ( zText != NULL ) { 
+	//	counter++;
+		return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
+	//}
+	
+	//return NULL;
 }
 
 PICK_CALL const char*
@@ -88,7 +89,11 @@ pick_version()
 #undef PICK_TRANSLATION_UNIT_ID
 #undef SOURCE_ARTIFACT_SHA3_HEX
 #undef PICK_NAME
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+_Noreturn void  __wasi_proc_exit
+(__wasi_exitcode_t rval) 
+{
+    __builtin_trap();
+}
