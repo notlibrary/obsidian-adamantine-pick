@@ -145,6 +145,18 @@ The compiler one-liner is this
 emcc src/pick.c -Wall -Wextra -lm -O3 --memory-init-file 0 --closure 1 -sWASM=0 -sMODULARIZE=1 -sEXPORT_NAME=pick -sTOTAL_STACK=131072 -sENVIRONMENT=web -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version -sEXPORTED_RUNTIME_METHODS=ccall,cwrap -o src/pick.js
 ```
 
+Or standalone `pick.wasm` it needs some glue code to pass C strings anyway
+
+```
+npm run pick
+```
+
+The comiler invocation then
+
+```
+emcc src/pick.c -Wall -Wextra -lm -O3 --no-entry -DNDEBUG --minify=0 -sMODULARIZE=0 -sWASM=1 -sSTANDALONE_WASM=1 -sTOTAL_STACK=131072 -sENVIRONMENT=web -sEXPORTED_FUNCTIONS=_pick,_pick_width,_pick_height,_pick_version,_malloc,_free -o src/pick.wasm
+```
+
 Encode `adamantine-diagram-notes.json` database
 
 ```
