@@ -3,12 +3,18 @@ import sha256 from 'crypto-js/sha256';
 /*
 	declare function require(name:string);
 	import factory = require("./pick.js");
-	Evade node.js 
+	Evade node.js
 */
 import { default as wasmbin } from './pick.wasm';
 
+declare module "obsidian" {
+	interface Vault {
+		setConfig: (config: string, newValue: string) => void;
+		getConfig: (config: string) => string;
+	}
+}
 
-const env = {
+export const import_env = {
     memoryBase: 0,
     tableBase: 0,
     memory: new WebAssembly.Memory({
@@ -19,15 +25,10 @@ const env = {
       element: 'anyfunc'
     })
   } 
-declare module "obsidian" {
-	interface Vault {
-		setConfig: (config: string, newValue: string) => void;
-		getConfig: (config: string) => string;
-	}
-}
+
 /* Some glue meh */
-const textEncoder = new TextEncoder();
-const textDecoder = new TextDecoder();
+export const textEncoder = new TextEncoder();
+export const textDecoder = new TextDecoder();
 export const createCString = (module, str) => {
 		const nullTerminatedString = str + "\0";
 		const encodedString = textEncoder.encode(nullTerminatedString);
@@ -131,7 +132,7 @@ export class AdamantinePickProcessor implements Processor {
     svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		/*factory().then(
 			async (instance) => { */
-				WebAssembly.instantiate(wasmbin, env).then( async (factory) => {
+				WebAssembly.instantiate(wasmbin, import_env).then( async (factory) => {
 			    const pikchr = factory.instance.exports.pick;
 				const get_height = factory.instance.exports.pick_height;
 				const get_width = factory.instance.exports.pick_width;
@@ -179,8 +180,10 @@ export class AdamantinePickProcessor implements Processor {
 				if (prepend && !skip) { source_final = prepend + source; }
 				if ( (command !== "#?skip") || (!skip))  {	
 						const source_final_ptr = createCString(factory, source_final);
-						const encodedDiagram_ptr = pikchr(source_final_ptr,this.dom_mark,this.dark_mode); 
-						encodedDiagram = receiveCString(factory,encodedDiagram_ptr);						
+						const dom_class_ptr = createCString(factory, this.dom_mark);
+						const encodedDiagram_ptr = pikchr(source_final_ptr,dom_class_ptr,this.dark_mode); 
+						encodedDiagram = receiveCString(factory,encodedDiagram_ptr);
+						factory.instance.exports.free(dom_class_ptr);						
 				}
 		
 				this.encodedDiagram = encodedDiagram;
