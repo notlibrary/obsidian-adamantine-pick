@@ -67,12 +67,12 @@ pick(const char *zText, const char *zClass, unsigned int mFlags)
 	pick_width(&pickWidth);
 	
 	
-	//if ( zText != NULL ) { 
-	//	counter++;
+	if ( zText != NULL ) { 
+		counter++;
 		return pikchr(zText, zClass, mFlags, pickWidth, pickHeight );
-	//}
+	}
 	
-	//return NULL;
+	return NULL;
 }
 
 PICK_CALL const char*
