@@ -29,7 +29,7 @@ jobs:
           dog_tag=$(git tag --sort version:refname | tail -n 1)
           RELEASE_NOTES=$(sed -e '/^$/,$d' CHANGELOG | tail +2)
           npm install
-          npm run pikchr
+          npm run pick
           npm run build
           npm run notes
           mkdir ${{ env.PLUGIN_NAME }}
