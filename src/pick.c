@@ -6,9 +6,19 @@
 	const factory = require("./pick.js");
 	factory().then((instance) => {
 		let pikchr = instance.cwrap('pick', 'string', ['string','string','number']);
-		let pick_width = instance.cwrap('pick_height', 'number', ['number']);
-		let pick_height = instance.cwrap('pick_width', 'number', ['number']);
+		let pick_width = instance.cwrap('pick_width', 'number', ['number']);
+		let pick_height = instance.cwrap('pick_height', 'number', ['number']);
 	}
+	
+	Or for standalone WASM build using ESbuild binary loader
+	import { default as wasmbin } from './pick.wasm';
+	WebAssembly.instantiate(wasmbin, import_env).then( async (factory) => {
+		const pikchr = factory.instance.exports.pick;
+		const get_height = factory.instance.exports.pick_height;
+		const get_width = factory.instance.exports.pick_width;
+	}
+	However it requires additional glue to pass null terminated strings
+	
 	Because passing pointers from js to C is complicated 
 	it passes pointer to inner static variable to pikchr
 	and cwrap method to get/set it from javascript/typescript
@@ -24,6 +34,11 @@ extern "C" {
 #define PICK_CALL
 #define PICK_MAGIC_DIMENSION 128
 #define PICK_TRANSLATION_UNIT_ID "pick.js"
+
+PICK_CALL char* pick(const char *zText, const char *zClass, unsigned int mFlags);
+PICK_CALL int pick_height(int** pick_height);
+PICK_CALL int pick_width(int** pick_width);
+PICK_CALL const char* pick_version();
 
 PICK_CALL int 
 pick_height(int** pick_height)
@@ -92,8 +107,26 @@ pick_version()
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-_Noreturn void  __wasi_proc_exit
-(__wasi_exitcode_t rval) 
+
+/* 
+	WTF? emcc imports this symbol in the standalone .wasm making it 
+	WASI type module impossible to instantiate in working thread so stub it
+	I don't need exit(0) native call in note-taking plugin --no-entry or int main(){while(1);}
+	fails to do it
+	
+	Normally it exits to garbage collector when code block is over or when user close 
+	app or turn off the plugin 
+	
+	Plugin architecture has nothing to do with native processes 
+	
+	It enters(if pushed to code block processors stack with registerMarkdownCodeBlockProcessor() beforehand)
+	when next valid code block pushed double LIFO(processors,blocks) 2 stacks there
+	code blocks stack pushed when user opens next file view changed or focus leaves code mirror editor buffer
+	
+	This registerMarkdownCodeBlockProcessor() API call has ~3 million cumulative installs maybe more	
+*/
+_Noreturn void  
+__wasi_proc_exit(__wasi_exitcode_t rval) 
 {
     __builtin_trap();
 }

@@ -16,7 +16,7 @@ declare module "obsidian" {
 
 export const import_env = {
     memoryBase: 0,
-    tableBase: 0,
+    tableBase: 1024*32,
     memory: new WebAssembly.Memory({
       initial: 0
     }),
@@ -132,6 +132,7 @@ export class AdamantinePickProcessor implements Processor {
     svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		/*factory().then(
 			async (instance) => { */
+		if (this.render_type!==3) {
 				WebAssembly.instantiate(wasmbin, import_env).then( async (factory) => {
 			    const pikchr = factory.instance.exports.pick;
 				const get_height = factory.instance.exports.pick_height;
@@ -192,6 +193,11 @@ export class AdamantinePickProcessor implements Processor {
 				
 				await this.diagram_handler (encodedDiagram, el, ctx);		
 			});
+		}
+		else {
+				console.log('dummy encoder');
+				return;
+		}
 	}
 	
 	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
@@ -228,9 +234,6 @@ export class AdamantinePickProcessor implements Processor {
 			}
 			else if(this.render_type === 2) {
 				el.createEl("div",{ text: source });
-			}
-			else {
-				console.log('dummy encoder');
 			}
 			
 			if (this.report) {
