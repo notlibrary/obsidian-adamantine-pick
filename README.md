@@ -37,6 +37,7 @@ Resistor color table calc? Sure
 ![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/28737d00-259d-42af-977c-a485ec7e812b)
 
 And my favourite sample so far recursive diagram see `src/pikchr.pikchr` file
+
 ![recursive_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/111564d9-4f19-4bf4-8146-c346565222e3)
 
 
