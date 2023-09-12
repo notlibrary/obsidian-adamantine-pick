@@ -36,6 +36,10 @@ Resistor color table calc? Sure
 
 ![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/28737d00-259d-42af-977c-a485ec7e812b)
 
+And my favourite sample so far recursive diagram see `src/pikchr.pikchr` file
+![recursive_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/111564d9-4f19-4bf4-8146-c346565222e3)
+
+
 ## Installation
 
 Because `pikchr.c` precompiled with emcc installing this plugin allows user to
@@ -176,7 +180,9 @@ npm run dev
 ```
 
 Build server actions workflow is also usable to automate this(and version bump)
-[See emsdk from github actions](https://github.com/mymindstorm/setup-emsdk) 
+[See emsdk from github actions](https://github.com/mymindstorm/setup-emsdk)
+Also [read raw action runner logs](https://github.com/notlibrary/obsidian-adamantine-pick/actions) if you find this instructions inconsistent or 
+hard to understand
 
 ## Pikchr Official Documentation References
 
