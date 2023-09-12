@@ -1,0 +1,19 @@
+#recursive pikchr pikchr diagram
+~~~pikchr
+D: [ 
+	B1: box "~~~pikchr" above ljust "box \"Hello, world\"" "~~~" ljust wid 2*boxwid ht 4.2*boxht
+	B2: box wid 2*boxwid ht 4.2*boxht with .w at 20px right of previous.end
+	box "Hello, world" at previous
+	
+	R: box "Run ▶️" fit with .sw at B1.nw
+	box "Save 💾" fit
+	
+	R2: box "SVG 🖼️" fit with .sw at B2.nw
+	box "Text 📄" fit
+	
+	oval "  > https://www.example.com" ljust fit wid 4*boxwid+20px with .w at 0.65*boxht above R.w
+	box rad 5px " 💻 Not Browser" ljust fit  "- □ X " big big rjust mono fit wid 4*boxwid+20px with .s at 0.1 above previous.n 
+]
+Monitor: box thin width D.width+0.1in height D.height+0.1in at D.center
+Caption: text "Recursive pikchr pikchr diagram" italic with .c at 0.1in below Monitor.s
+~~~
