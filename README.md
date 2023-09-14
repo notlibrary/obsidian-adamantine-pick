@@ -25,7 +25,7 @@ Use note with 3-backticks(tildes) fenced code block marked `pikchr` to get SVG i
 
 Use `adamantine` class attribute selector to manipulate it from code
 
-> GPT-3 parrot #39402817203 pikchr random space station map adamantine diagram note
+> GPT-4 parrot #39402817203 pikchr random space station map adamantine diagram note
 > and fix 9000 oval in it
 
 See? "Absurd nerd value" for 3 pages free wrapper script(plugin)  
@@ -68,7 +68,7 @@ Test installing
 
 To pick up adamantine diagram notes use separate "Adamantine Pick" command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
 If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire notes 
-collection from github plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
+collection from GitHub plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
 
 Or you can pick up it manually by copying `src/*.md` files from this plugin repo to your `VaultFolder/adamantine` 
 or downloading `adamantine-diagram-notes.zip` from latest [release page](https://github.com/notlibrary/obsidian-adamantine-pick/releases) 
@@ -76,8 +76,8 @@ and extracting it to your `VaultFolder/adamantine`
 
 To push your own adamantine diagram note design into plugin collection use this checklist: 
 
-- utf-8 encoded text file in English(preferably)
-- less equal 4kb(4096 bytes) size that fits in a single HDD block
+- UTF-8 encoded text file in English(preferably)
+- less equal 4KB(4096 bytes) size that fits in a single HDD block
 - lowercase (a-z) less equal 8 characters unique filename len with extension .md 8 + 2
 - has one or more Pikchr diagrams in it MathJax Markdown optionally
 - fits in a single screen when picked with Obsidian
@@ -105,10 +105,10 @@ This is the most hilarious usage case then you virtualize decoder desktop box
 (with obsidian and plugin installed and note collection picked in it) on the remote 
 virtualization server then share hypervisor virtual machine player over the network 
 or remote framebuffer keyboard protocol with your target host screen browser 
-or vnc window so you fully observe notes decoded remotely locally  
+or VNC window so you fully observe notes decoded remotely locally  
 
-I tested it with neverinstall boxes you can retry it anytime
-If you are running youtube channel you can show this trick to your subscribers
+I tested it with Neverinstall boxes you can retry it anytime
+If you are running YouTube channel you can show this trick to your subscribers
 "Unboxing adamantine diagram notes" lol anyway it's very hard to achieve truly 
 reusable city screens
 
