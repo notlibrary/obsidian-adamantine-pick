@@ -10,7 +10,7 @@ Pikchr itself
 
 ## Demo
 
-![adamantine-pick-demo](https://user-images.githubusercontent.com/40695473/214959908-ae7b23f2-02f4-4c54-815e-7204ae318911.gif)
+![adamantine_pick_demo](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/b4bab068-6666-41a6-9c82-cda570ef7497)
 
 Use note with 3-backticks(tildes) fenced code block marked `pikchr` to get SVG in
 
