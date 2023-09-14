@@ -8,7 +8,7 @@ without any single idea what to do next
 
 The 3-step algorithm as follows:
 1. Get over it there's nothing you can do they all just pieces of paper flying away from you
-2. Push finest extremly embeddable small vector graphics code in
+2. Push finest extremely embeddable small vector graphics code in
 3. (Optional) Start noticing pushing taking graphing short branded standardized pieces with highest estimated repickability/reusability value with it
 
 ```pikchr
@@ -26,7 +26,7 @@ Ironically the highest estimated repickability value short note in human history
 periodic table of elements and none of it elements exist in it's pure form in nature
 
 Also the algorithm seems cool at the first glance avoid turning it into glass bead game 
-swiss army knife and offline wikipedia dump then take care of yourself
+Swiss army knife and offline Wikipedia dump then take care of yourself
 and lazy overwatch what really happened with it if you will
 On the other hand avoid being useless expensive jet airshow 
 anyway it does vector calculus just for the lulz

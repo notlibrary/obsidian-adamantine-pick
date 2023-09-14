@@ -44,7 +44,7 @@ And my favourite sample so far recursive diagram see `src/pikchr.pikchr` file
 ## Installation
 
 Because `pikchr.c` precompiled with emcc installing this plugin allows user to
-markup diagrams directly from client without installing compiling pikchr
+markup diagrams directly from client without installing compiling Pikchr
 itself.  This makes plugin embeddable usable "out of the box" "client-side"
 "offline"
 
@@ -77,13 +77,13 @@ and extracting it to your `VaultFolder/adamantine`
 To push your own adamantine diagram note design into plugin collection use this checklist: 
 
 - utf-8 encoded text file in English(preferably)
-- less equal 4kb(4096 bytes) size that fits in a single hdd block
+- less equal 4kb(4096 bytes) size that fits in a single HDD block
 - lowercase (a-z) less equal 8 characters unique filename len with extension .md 8 + 2
-- has one or more pikchr diagrams in it mathjax markdown optionally
+- has one or more Pikchr diagrams in it MathJax Markdown optionally
 - fits in a single screen when picked with Obsidian
-- tagged with yaml `--- tag: adamantine ---` and `#adamantine`
-- tight cybersecure has no malicious executable code in it(i.e. perl one-liners) 
-- no ads messing with others personal data(OP self signature is ok)
+- tagged with YAML `--- tag: adamantine ---` and `#adamantine`
+- tight cybersecure has no malicious executable code in it(i.e. Perl one-liners) 
+- no ads messing with others personal data(OP self signature is OK)
 - embeddable in place does not rely on cloud internet connection or dynamic linking
 - decodable with stock computer hardware 
 - does not repeat existing adamantine diagram notes in collection(also has unique filename)
@@ -132,7 +132,7 @@ git clone https://github.com/notlibrary/obsidian-adamantine-pick adamantine-pick
 cd adamantine-pick
 ```
 
-Install node.js dev packages
+Install Node.js dev packages
 	
 ```
 npm install
@@ -181,7 +181,7 @@ npm run dev
 ```
 
 Build server actions workflow is also usable to automate this(and version bump)
-[See emsdk from github actions](https://github.com/mymindstorm/setup-emsdk)
+[See emsdk from GitHub actions](https://github.com/mymindstorm/setup-emsdk)
 Also [read raw action runner logs](https://github.com/notlibrary/obsidian-adamantine-pick/actions) if you find this instructions inconsistent or 
 hard to understand
 

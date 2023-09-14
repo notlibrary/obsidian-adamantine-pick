@@ -3,7 +3,7 @@ tag: adamantine
 ---
 Adamantine diagram note about Landauer limit and meaning of nonsensical random bit flipping 
 computer white noise It tells same old electrical engineering lore legend about counting 
-parliament election votes in some small and very high developed european nation
+parliament election votes in some small and very high developed European nation
 So their memory chip capacitor cell hit with alpha particle from outer space(sic!) which charges 
 cap and thus flips [ most significant bit + 5th(or other random index) ] in vote counter variable(or 
 stack) inside computer program thus multiplying votes for some lucky unknown person 32 times

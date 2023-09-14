@@ -5,7 +5,7 @@ Sample crafted adamantine diagram note to test the theory on the toolstack affai
 Install [Adamantine Pick](https://github.com/notlibrary/obsidian-adamantine-pick) plugin and view this note through Obsidian
 
 Memo twice integrating book analog circuit "double integrator" with single operational
-amplifier packed in ~4kb single HDD block text note fully graphicaly renderable interactive
+amplifier packed in ~4kb single HDD block text note fully graphically renderable interactive
 portable model transferable over the internet with ~zero costs  
 
 >Although not the best practice because "Digital? Every Idiot Can Count to One"(c) 
@@ -149,7 +149,7 @@ Caption: text "Double integrator OPamp circuit by @notlibrary" mono with .n at 0
 $$ C_1 = \frac{C_2}{2} \quad R_1 = \frac{R_2}{2} $$
 $$ E_0 = \frac{-4}{(R_1C_1)^2} \iint{E_1}{\mathrm{d}t\mathrm{d}t} $$
 Note it can be decoded entirely offline on the 100$ laptop 20$ SBC or even 5$ virtual 
-server in literally any part of the world unbelievable structural efficency
+server in literally any part of the world unbelievable structural efficiency
 
 The following open source toolstack contributors made it happen:  
 [Emscripten](https://emscripten.org/) [Typescript](https://www.typescriptlang.org/)  [Electron](https://www.electronjs.org/) [Obsidian](https://obsidian.md/) [Markdown](https://spec.commonmark.org/) [MathJax](https://www.mathjax.org/)  [Pikchr](https://pikchr.org)
