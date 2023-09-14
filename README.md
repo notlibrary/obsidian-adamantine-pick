@@ -34,7 +34,8 @@ See? "Absurd nerd value" for 3 pages free wrapper script(plugin)
 
 Resistor color table calc? Sure 
 
-![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/28737d00-259d-42af-977c-a485ec7e812b)
+![resistor_calculator_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/e1acb1fe-f8bb-4884-8af3-3d0461c6d6de)
+
 
 And my favourite sample so far recursive diagram see `src/pikchr.pikchr` file
 
@@ -216,6 +217,8 @@ gimmick glittering fence like this:
 
 I am happy to leave discussion of actual utlility of 
 aforementioned features to the users
+
+![css_postprocessing_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/c5cf1798-8957-4fc5-a3fc-29432b35ec8d)
 
 
 ## Note
