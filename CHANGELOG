@@ -1,3 +1,9 @@
+15-Sep 2023 0.5.0
+Adamantine Pick Plugin for Obsidian
+Support for standalone WASM build
+Added recursive diagram demo sample
+Various documentation improvements and small fixes
+
 8-Sep 2023 0.4.9
 Adamantine Pick Plugin for Obsidian
 Diagram postprocessor improvements with CSS SVG postprocessing

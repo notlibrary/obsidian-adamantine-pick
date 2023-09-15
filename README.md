@@ -102,12 +102,12 @@ with hope to aid your workflow that's it basically
 ## Remote gripping adamantine diagram notes
 
 This is the most hilarious usage case then you virtualize decoder desktop box 
-(with obsidian and plugin installed and note collection picked in it) on the remote 
+(with Obsidian and plugin installed and note collection picked in it) on the remote 
 virtualization server then share hypervisor virtual machine player over the network 
 or remote framebuffer keyboard protocol with your target host screen browser 
 or VNC window so you fully observe notes decoded remotely locally  
 
-I tested it with Neverinstall boxes you can retry it anytime
+I tested it with [Neverinstall](https://neverinstall.com/) boxes you can retry it anytime
 If you are running YouTube channel you can show this trick to your subscribers
 "Unboxing adamantine diagram notes" lol anyway it's very hard to achieve truly 
 reusable city screens

@@ -34,6 +34,7 @@ extern "C" {
 #define PICK_CALL
 #define PICK_MAGIC_DIMENSION 128
 #define PICK_TRANSLATION_UNIT_ID "pick.js"
+#define PICK_STANDALONE_WASM_ID "pick.wasm"
 
 PICK_CALL char* pick(const char *zText, const char *zClass, unsigned int mFlags);
 PICK_CALL int pick_height(int** pick_height);
@@ -102,6 +103,7 @@ pick_version()
 #undef PICK_CALL
 #undef PICK_MAGIC_DIMENSION
 #undef PICK_TRANSLATION_UNIT_ID
+#undef PICK_STANDALONE_WASM_ID
 #undef SOURCE_ARTIFACT_SHA3_HEX
 #undef PICK_NAME
 #ifdef __cplusplus
@@ -121,9 +123,10 @@ pick_version()
 	
 	It enters(if pushed to code block processors stack with registerMarkdownCodeBlockProcessor() beforehand)
 	when next valid code block pushed double LIFO(processors,blocks) 2 stacks there
-	code blocks stack pushed when user opens next file view changed or focus leaves code mirror editor buffer
+	code blocks stack pushed when user opens next file (pre)view mode changed or focus leaves code mirror editor buffer
 	
-	This registerMarkdownCodeBlockProcessor() API call has ~3 million cumulative installs maybe more	
+	This registerMarkdownCodeBlockProcessor() API call has ~3 million cumulative installs maybe more
+	prooflink: https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugin-stats.json
 */
 _Noreturn void  
 __wasi_proc_exit(__wasi_exitcode_t rval) 

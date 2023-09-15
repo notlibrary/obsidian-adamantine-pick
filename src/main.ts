@@ -28,7 +28,7 @@ export const import_env = {
 
 /* Some glue meh */
 export const textEncoder = new TextEncoder();
-export const textDecoder = new TextDecoder();
+export const textDecoder = new TextDecoder('utf8');
 export const createCString = (module, str) => {
 		const nullTerminatedString = str + "\0";
 		const encodedString = textEncoder.encode(nullTerminatedString);
@@ -36,8 +36,9 @@ export const createCString = (module, str) => {
 		try {
 			const destination = new Uint8Array(module.instance.exports.memory.buffer, address);
 			destination.set(encodedString);
-			return address;
+			
 		} finally {
+			return address;
 		}
 	};
 export const readStaticCString = (module, address) => {
@@ -115,6 +116,7 @@ export class AdamantinePickProcessor implements Processor {
 	preserve_diagram_debug_print: boolean;
 	postprocessor: AdamantinePickPostProcessor;
 	prepend: string;
+	parser: DOMParser;
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
@@ -125,7 +127,7 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_height = 0;
 		this.diagram_width = 0;
 		this.prepend = "";
-
+		this.parser = new DOMParser();
 	}
 	
 
@@ -152,9 +154,9 @@ export class AdamantinePickProcessor implements Processor {
 				   Space or newline at the end of file in reading mode in source at the end of codeblock 
 				   Source are different strings in reading and editing mode lol
 				*/
-				const command = source.substring(source.lastIndexOf("#")).trim(); 
+				const control_index = source.lastIndexOf("\n#?");
+				const command = ( control_index > -1) ? source.substring(control_index).trim() : "no"; 
 				const has_control_sequence = (command.substring(0, 2) === "#?");
-
 				const hashtable = this.postprocessor.visited;
 				let prepend = "";
 				let skip = false;
@@ -208,8 +210,8 @@ export class AdamantinePickProcessor implements Processor {
 			el.createEl("span",{ text: "[Adamantine Pick] Empty diagram returned"}); 
 			return;
 		}		
-		const parser = new DOMParser();
-		const svg = parser.parseFromString(source, "text/html");
+
+		const svg = this.parser.parseFromString(source, "text/html");
 		
 		const diagrams = svg.getElementsByTagName("svg");
 		
@@ -306,7 +308,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
-		this.registerEvent(this.app.workspace.on('file-open', () => { this.banshee.counter = 0;}));
+		this.registerEvent(this.app.workspace.on('file-open', () => { this.banshee.counter = 0; this.banshee.visited = {}; }));
 		
 		
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
@@ -381,7 +383,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		for (let i = 0; i < length; i++) {
 			bytes[i] = input_text.charCodeAt(i);
 		}
-		const decoder = new TextDecoder(); /* utf-8 default */
+		const decoder = new TextDecoder('utf8');
 		return decoder.decode(bytes);
 	}	
 	
