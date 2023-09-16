@@ -49,6 +49,7 @@ itself.  This makes plugin embeddable usable "out of the box" "client-side"
 "offline"
 
 With user interface
+
 - Ensure Safe mode is **off** 
 - Settings > Community plugins > Turn On Community Plugins
 - Click Browse community plugins or just open install URL `obsidian://show-plugin?id=adamantine-pick`
@@ -58,10 +59,12 @@ With user interface
 - Settings > Community Plugins > Installed Plugins > Adamantine Pick
 
 Manually installing
+
 - Copy over `main.js`, `manifest.json`, `styles.css` to your Vault 
 `VaultFolder/.obsidian/plugins/adamantine-pick/`
 
 Test installing
+
 - Paste [this plugin repo link](https://github.com/notlibrary/obsidian-adamantine-pick) into plugin for [testing other plugins](https://github.com/TfTHacker/obsidian42-brat) 
 
 ## Picking up and Pushing adamantine diagram notes
@@ -111,6 +114,11 @@ I tested it with [Neverinstall](https://neverinstall.com/) boxes you can retry i
 If you are running YouTube channel you can show this trick to your subscribers
 "Unboxing adamantine diagram notes" lol anyway it's very hard to achieve truly 
 reusable city screens
+
+Anyway you can also use native shell script to fetch decode JSON directly then 
+[*preprocess* the Pikchr + Markdown input](https://github.com/zenomt/pikchr-cmd) 
+then convert it to PDF or HTML with pandoc without touching note taking app 
+GUI and plugin system at all
 
 ## How to build plugin
 
@@ -218,6 +226,7 @@ gimmick glittering fence like this:
 
 I am happy to leave discussion of actual utility of 
 aforementioned features to the users
+As for syntax highlighter GitHub editor already has one
 
 ## Note
 

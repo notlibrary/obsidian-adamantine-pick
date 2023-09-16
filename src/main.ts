@@ -117,6 +117,13 @@ export class AdamantinePickProcessor implements Processor {
 	postprocessor: AdamantinePickPostProcessor;
 	prepend: string;
 	parser: DOMParser;
+	pikchr: string;
+	get_height: number;
+	get_width: number;
+	get_artifact_version: string;
+	factory: WebAssemblyInstantiatedSource;
+	dom_class_ptr:number;
+	
 	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = render_type;
 		this.dark_mode = mFlags;
@@ -127,82 +134,84 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_height = 0;
 		this.diagram_width = 0;
 		this.prepend = "";
+		WebAssembly.instantiate(wasmbin, import_env).then( (factory) => {
+			    this.pikchr = factory.instance.exports.pick;
+				this.get_height = factory.instance.exports.pick_height;
+				this.get_width = factory.instance.exports.pick_width;
+				this.get_artifact_version = factory.instance.exports.pick_version;
+				this.factory = factory;
+				this.dom_class_ptr = createCString(this.factory, this.dom_mark);
+		});
+	
 		this.parser = new DOMParser();
 	}
 	
-
-    svg = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-		/*factory().then(
-			async (instance) => { */
-		if (this.render_type!==3) {
-				WebAssembly.instantiate(wasmbin, import_env).then( async (factory) => {
-			    const pikchr = factory.instance.exports.pick;
-				const get_height = factory.instance.exports.pick_height;
-				const get_width = factory.instance.exports.pick_width;
-				const get_artifact_version = factory.instance.exports.pick_version;	
-				
-				this.timestamp = Date.now();
-				
-			    /* 
-			    const pikchr = factory.instance.cwrap('pick', 'string', ['string','string','number']);
-			    const get_height = factory.instance.cwrap('pick_height', 'number', ['number']);
-			    const get_width = factory.instance.cwrap('pick_width', 'number', ['number']);
-			    const get_artifact_version = factory.instance.cwrap('pick_version', 'string');				
-				*/
-				this.encodedDiagram = "";
-				/* 
-				   Space or newline at the end of file in reading mode in source at the end of codeblock 
-				   Source are different strings in reading and editing mode lol
-				*/
-				const control_index = source.lastIndexOf("\n#?");
-				const command = ( control_index > -1) ? source.substring(control_index).trim() : "no"; 
-				const has_control_sequence = (command.substring(0, 2) === "#?");
-				const hashtable = this.postprocessor.visited;
-				let prepend = "";
-				let skip = false;
-				if (has_control_sequence) {
-					prepend = hashtable[source];
-					if (!prepend) {
-						if (command === "#?skip") { prepend = "skip"; skip = true; }
-						if (command === "#?diag") {
-							const artifact_sha3_ptr = get_artifact_version(); 
-							const artifact_sha3 = readStaticCString(factory,artifact_sha3_ptr);
-							prepend = 'print ' + '"Pikchr SHA-3: ' + artifact_sha3 + '"' + "\n";
-						}
-						if (command === "#?purple") {prepend = "fill=purple\n";}
-						hashtable[source] = prepend;
-					}
-					prepend = hashtable[source];
-					if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; }
-				}
-				else { prepend = ""; }
-				
-				let encodedDiagram = "<!-- empty pikchr diagram -->\n";
-				let source_final = source;
-				skip = (prepend === "skip");
-				if (prepend && !skip) { source_final = prepend + source; }
-				if ( (command !== "#?skip") || (!skip))  {	
-						const source_final_ptr = createCString(factory, source_final);
-						const dom_class_ptr = createCString(factory, this.dom_mark);
-						const encodedDiagram_ptr = pikchr(source_final_ptr,dom_class_ptr,this.dark_mode); 
-						encodedDiagram = receiveCString(factory,encodedDiagram_ptr);
-						factory.instance.exports.free(dom_class_ptr);						
-				}
-		
-				this.encodedDiagram = encodedDiagram;
-				this.diagram_height = get_height(0);
-				this.diagram_width = get_width(0);
-				
-				await this.diagram_handler (encodedDiagram, el, ctx);		
-			});
-		}
-		else {
-				console.log('dummy encoder');
-				return;
-		}
+	update_dom_mark() {
+		this.factory.instance.exports.free(this.dom_class_ptr);
+		this.dom_class_ptr = createCString(this.factory, this.dom_mark);
 	}
 	
-	diagram_handler = async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
+	dummy = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		console.log(source);
+		return;
+	}
+	
+	encoder = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		if (this.render_type!==3) { 
+			this.timestamp = Date.now();
+			this.encodedDiagram = "";
+			this.svg(source,el,ctx);
+		}
+		else {
+			this.dummy("dummy encoder",el,ctx);
+		}
+		return;
+	}
+	
+    svg = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		const factory = this.factory;
+		/* 
+		   Space or newline at the end of file in reading mode in source at the end of codeblock 
+		   Source are different strings in reading and editing mode lol
+		*/
+		const control_index = source.lastIndexOf("\n#?");
+		const command = ( control_index > -1) ? source.substring(control_index).trim() : "no"; 
+		const has_control_sequence = (command.substring(0, 2) === "#?");
+		const hashtable = this.postprocessor.visited;
+		let prepend = "";
+		let skip = false;
+		let encodedDiagram = "<!-- empty pikchr diagram -->\n";
+		let source_final = source;
+	
+		if (has_control_sequence) {
+			prepend = hashtable[source];
+			if (!prepend) {
+				if (command === "#?skip") { prepend = "skip"; skip = true; }
+				if (command === "#?diag") {
+					prepend = 'print ' + '"Pikchr SHA-3: ' + readStaticCString(factory,this.get_artifact_version()) + '"' + "\n";
+				}
+				if (command === "#?purple") {prepend = "fill=purple\n";}
+				hashtable[source] = prepend;
+			}
+			prepend = hashtable[source];
+			if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; }
+		}
+		else { prepend = ""; }
+		
+
+		skip = (prepend === "skip");
+		if (prepend && !skip) { source_final = prepend + source; }
+		if ( (command !== "#?skip") || (!skip))  {	
+				encodedDiagram = receiveCString(factory,this.pikchr(createCString(factory, source_final),this.dom_class_ptr,this.dark_mode));						
+		}
+		
+		this.encodedDiagram = encodedDiagram;
+		this.diagram_height = this.get_height(0);
+		this.diagram_width = this.get_width(0);
+		this.diagram_handler (encodedDiagram, el, ctx);		
+	}
+	
+	diagram_handler = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
 		
 		const length = source.length;	
 		if ((length <=30) && (source == "<!-- empty pikchr diagram -->\n")) {
@@ -213,19 +222,16 @@ export class AdamantinePickProcessor implements Processor {
 
 		const svg = this.parser.parseFromString(source, "text/html");
 		
-		const diagrams = svg.getElementsByTagName("svg");
+		const diagrams =  Array.from(svg.getElementsByTagName("svg"));
 		
-		if (diagrams.length === 0) {
+		if (!Array.isArray(diagrams) || !diagrams.length) { 
 			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
 			if (this.report) {
-				const status_report_error = "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above"; 
-				el.createEl("div",{ text: status_report_error });
+				el.createEl("div",{ text: "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above" });
 			}
 		}
 		
-		for (let i = 0; i < diagrams.length; i++) {
-			const diagram = diagrams[0];
-			
+		diagrams.forEach( ( diagram, i ) => {	
 			if (this.render_type === 1) {
 				if (this.preserve_diagram_debug_print) {
 					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
@@ -239,12 +245,9 @@ export class AdamantinePickProcessor implements Processor {
 			}
 			
 			if (this.report) {
-				const deltat = Date.now() - this.timestamp;
-				const status_report = "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + deltat; 
-				el.createEl("div",{ text: status_report });
+				el.createEl("div",{ text:  "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + (Date.now() - this.timestamp) });
 			}
-		
-		}
+		});
 		this.postprocessor.svg(el, ctx);
 	}
 	
@@ -254,18 +257,19 @@ export class AdamantinePickPostProcessor implements Postprocessor {
 	public visited:{ [index:string] : string };
 	dom_mark: string;
 	counter = 0;
+	
 	constructor( diagram_proc: AdamantinePickProcessor, dom_mark ) {
 		this.visited = {};
 		this.dom_mark = dom_mark;
 		diagram_proc.postprocessor = this;
 		this.counter = 0
 	}
+	
 	svg = ( el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {
 		const selector = "svg." + this.dom_mark;
 		const postsvg = el.querySelectorAll<HTMLElement>(selector);
 		postsvg.forEach( ( diagram, i ) => {
-			const id_cnt = this.counter + i; 
-			diagram.id = 'postproc-diag-' + id_cnt; 
+			diagram.id = 'postproc-diag-' + (this.counter + i); 
 			/* 
 			   Optional style postprocessing if any goes here
 			   hide, color invert, transform, rotate, scale, fade in/out, opacity, glow, blur, 
@@ -306,7 +310,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.diagram_processor.plugin_ptr = this;
 		this.banshee = new AdamantinePickPostProcessor(this.diagram_processor, dom_mark);
 		
-		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.svg);
+		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.encoder);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
 		this.registerEvent(this.app.workspace.on('file-open', () => { this.banshee.counter = 0; this.banshee.visited = {}; }));
 		
@@ -370,6 +374,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.diagram_processor.render_type = this.settings.encoder_type;
 		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
 		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
+		this.diagram_processor.update_dom_mark();
 		this.diagram_processor.report = this.settings.output_diagram_stats;
 		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
 	
