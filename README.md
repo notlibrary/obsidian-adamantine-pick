@@ -120,6 +120,11 @@ Anyway you can also use native shell script to fetch decode JSON directly then
 then convert it to PDF or HTML with pandoc without touching note taking app 
 GUI and plugin system at all
 
+Moreover it can replace Pikchr with some ancient logo turtle interpreter or even
+typographical forth dialect basically anything that output vectors in computers
+General interest in computer archaeology and dinosaurs is fascinating curious 
+international paperwork affair
+
 ## How to build plugin
 
 Install and activate [emcc](https://emscripten.org) using emsdk
