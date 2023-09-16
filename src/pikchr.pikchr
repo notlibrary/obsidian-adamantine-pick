@@ -1,5 +1,4 @@
 #recursive pikchr pikchr diagram
-~~~pikchr
 D: [ 
 	B1: box "~~~pikchr" above ljust "box \"Hello, world\"" "~~~" ljust wid 2*boxwid ht 4.2*boxht
 	B2: box wid 2*boxwid ht 4.2*boxht with .w at 20px right of previous.end
@@ -16,4 +15,3 @@ D: [
 ]
 Monitor: box thin width D.width+0.1in height D.height+0.1in at D.center
 Caption: text "Recursive pikchr pikchr diagram" italic with .c at 0.1in below Monitor.s
-~~~
