@@ -233,6 +233,16 @@ I am happy to leave discussion of actual utility of
 aforementioned features to the users
 As for syntax highlighter GitHub editor already has one
 
+Another nice feature is interacting with core app plugins
+Put the note with callout that embeds named clock diagram
+block from another note into canvas then open canvas and 
+page preview note with callout
+
+![plugin_interaction_sample](https://github.com/notlibrary/obsidian-adamantine-pick/assets/40695473/434b943c-704f-46c9-b70f-e3c9282cb68d)
+
+Here it is have fun
+
+
 ## Note
 
 Experimental bloated ugly wrapper but possibility to run it entirely in 
