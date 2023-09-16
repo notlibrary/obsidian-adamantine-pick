@@ -94,7 +94,7 @@ export interface AdamantineDiagramNote {
 }
 
 export interface Processor {
-    svg: (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => Promise<void>;
+    svg: (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => void;
 
 }
 
@@ -135,7 +135,7 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_width = 0;
 		this.prepend = "";
 		WebAssembly.instantiate(wasmbin, import_env).then( (factory) => {
-			    this.pikchr = factory.instance.exports.pick;
+				this.pikchr = factory.instance.exports.pick;
 				this.get_height = factory.instance.exports.pick_height;
 				this.get_width = factory.instance.exports.pick_width;
 				this.get_artifact_version = factory.instance.exports.pick_version;
