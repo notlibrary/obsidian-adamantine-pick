@@ -225,7 +225,7 @@ export class AdamantinePickProcessor implements Processor {
 		const diagrams =  Array.from(svg.getElementsByTagName("svg"));
 		
 		if (!Array.isArray(diagrams) || !diagrams.length) { 
-			el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+			el.insertAdjacentHTML('beforeend', svg.body.innerHTML);
 			if (this.report) {
 				el.createEl("div",{ text: "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above" });
 			}
@@ -234,7 +234,7 @@ export class AdamantinePickProcessor implements Processor {
 		diagrams.forEach( ( diagram, i ) => {	
 			if (this.render_type === 1) {
 				if (this.preserve_diagram_debug_print) {
-					el.insertAdjacentHTML('beforeend', svg.documentElement.outerHTML);
+					el.insertAdjacentHTML('beforeend', svg.body.innerHTML);
 				}
 				else {
 					el.insertAdjacentHTML('beforeend', diagram.outerHTML);

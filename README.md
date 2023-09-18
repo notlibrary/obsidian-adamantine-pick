@@ -123,7 +123,9 @@ GUI and plugin system at all
 Moreover it can replace Pikchr with some ancient logo turtle interpreter or even
 typographical forth dialect basically anything that output vectors in computers
 General interest in computer archaeology and dinosaurs is fascinating curious 
-international paperwork affair
+international paperwork affair Nonetheless it provides excellent tooling for
+durable lightweight computer documentation Input data inconsistency is a 
+fact of life (not advocating that)
 
 ## How to build plugin
 
