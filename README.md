@@ -117,7 +117,7 @@ reusable city screens
 
 Anyway you can also use native shell script to fetch decode JSON directly then 
 [*preprocess* the Pikchr + Markdown input](https://github.com/zenomt/pikchr-cmd) 
-then convert it to PDF or HTML with pandoc without touching note taking app 
+then convert it to PDF or HTML with [Pandoc](https://pandoc.org/) without touching note taking app 
 GUI and plugin system at all
 
 Moreover it can replace Pikchr with some ancient logo turtle interpreter or even

@@ -1,3 +1,9 @@
+18-Sep 2023 0.5.1
+Adamantine Pick Plugin for Obsidian
+Patch for WASM instantiate and more fixes
+Added core plugins interaction sample read the docs
+Re-licensed to 0BSD
+
 15-Sep 2023 0.5.0
 Adamantine Pick Plugin for Obsidian
 Support for standalone WASM build
