@@ -1,3 +1,9 @@
+08-Apr 2024 0.5.2
+Adamantine Pick Plugin for Obsidian
+Updated original source artifact to Version 1.0.0
+Various improvements of and fixes in source artifact
+Support of 'diamond' primitive block object
+
 18-Sep 2023 0.5.1
 Adamantine Pick Plugin for Obsidian
 Patch for WASM instantiate and more fixes

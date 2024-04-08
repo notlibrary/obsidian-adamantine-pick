@@ -29,7 +29,7 @@ extern "C" {
 #endif
 #define NDEBUG 1
 #include "pikchr.c"
-#define SOURCE_ARTIFACT_SHA3_HEX "64bf5f887424481b5f716f0b9d5f0cc5b83db97b34c1d4c60b5a92b248c1666b"
+#define SOURCE_ARTIFACT_SHA3_HEX "9aac00a46506e993db45b740f7a7957f8f381b37001e196199dfc25642c44f06"
 #define PICK_NAME "Adamantine Pick"
 #define PICK_CALL
 #define PICK_MAGIC_DIMENSION 128

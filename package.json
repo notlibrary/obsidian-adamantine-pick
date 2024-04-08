@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-adamantine-pick",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
 	"main": "main.js",
 	"scripts": {
