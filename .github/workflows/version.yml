@@ -15,7 +15,7 @@ jobs:
       with:
         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-        token: ${{secrets.PAT}} # use a personal acces token so that other actions can trigger
+        token: ${{secrets.PAT2}} # use a personal acces token so that other actions can trigger
     # Bump the version number
     - name: Update Version
       uses: MCKanpolat/auto-semver-action@1.0.10
@@ -43,6 +43,6 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{secrets.PAT}}
+        github_token: ${{secrets.PAT2}}
         tags: true
         branch: ${{ github.ref }}
