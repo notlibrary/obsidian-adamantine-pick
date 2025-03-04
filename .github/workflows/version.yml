@@ -22,7 +22,7 @@ jobs:
       id: version
       with:
         releaseType: ${{ github.event.inputs.type }}
-        github_token: ${{ secrets.PAT }}
+        github_token: ${{ secrets.PAT2 }}
     # update the manifest.json with the new version
     - name: Update manifest version
       uses: jossef/action-set-json-field@v2.1
