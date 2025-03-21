@@ -205,7 +205,7 @@ hard to understand
 - [Manual](https://pikchr.org/home/doc/trunk/doc/userman.md)
 - [Examples](https://pikchr.org/home/doc/trunk/doc/examples.md)
 - [Specification](https://pikchr.org/home/doc/trunk/doc/grammar.md)
-- [Source Artifact](https://pikchr.org/home/artifact/64bf5f8874)
+- [Source Artifact](https://pikchr.org/home/artifact/2ee4602ca6)
 
 ## CSS SVG postprocessing features
 
