@@ -363,10 +363,16 @@ export default class AdamantinePickPlugin extends Plugin {
 	}
 	
 	private get_dark_mode_flag() {
-		const isLightMode = this.app.vault.getConfig("theme") !== "obsidian";
-		let dark_mode_flag = 0x0002;
-		if (isLightMode || this.settings.bleach_diagram) { dark_mode_flag = 0x0000; }
-		return dark_mode_flag;
+		if (this.settings.bleach_diagram) return 0x0000;
+		return this.is_dark_mode() ? 0x0002 : 0x0000;
+	}
+	
+	private is_dark_mode() {
+		let theme = this.app.vault.getConfig("theme");
+		if (theme === "obsidian") return true;
+		if (theme === "moonstone") return false;
+		if (theme === "system")
+			return !document.body.classList.contains('theme-light');
 	}
 	
 	async saveSettings(): Promise<void>  {
