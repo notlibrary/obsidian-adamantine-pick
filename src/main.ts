@@ -215,8 +215,8 @@ export class AdamantinePickProcessor implements Processor {
 		
 		const length = source.length;	
 		if ((length <=30) && (source == "<!-- empty pikchr diagram -->\n")) {
-			el.createEl("span",{ text: source});
-			el.createEl("span",{ text: "[Adamantine Pick] Empty diagram returned"}); 
+			el.createSpan({ text: source});
+			el.createSpan({ text: "[Adamantine Pick] Empty diagram returned"}); 
 			return;
 		}		
 
@@ -227,7 +227,7 @@ export class AdamantinePickProcessor implements Processor {
 		if (!Array.isArray(diagrams) || !diagrams.length) { 
 			el.insertAdjacentHTML('beforeend', svg.body.innerHTML);
 			if (this.report) {
-				el.createEl("div",{ text: "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above" });
+				el.createDiv({ text: "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above" });
 			}
 		}
 		
@@ -241,11 +241,11 @@ export class AdamantinePickProcessor implements Processor {
 				}
 			}
 			else if(this.render_type === 2) {
-				el.createEl("div",{ text: source });
+				el.createDiv({ text: source });
 			}
 			
 			if (this.report) {
-				el.createEl("div",{ text:  "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + (Date.now() - this.timestamp) });
+				el.createDiv({ text:  "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + (Date.now() - this.timestamp) });
 			}
 		});
 		this.postprocessor.svg(el, ctx);
