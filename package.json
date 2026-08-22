@@ -21,7 +21,6 @@
 	"license": "0BSD",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
-		"builtin-modules": "3.3.0",
 		"crypto-js": "^4.1.1",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.8.1",

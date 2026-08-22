@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from 'builtin-modules'
+import { builtinModules } from 'node:module'
 
 import path from 'node:path'
 import fs from 'node:fs'
@@ -53,7 +53,7 @@ const options = {
 	external: [
 		"obsidian",
 		"electron",
-		...builtins],
+		...builtinModules],
 	format: 'cjs',
 	target: 'es2018',
 	logLevel: "info",
