@@ -319,7 +319,6 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.addCommand({
 			id: 'pick-adamantine-notes',
 			name: 'Adamantine Pick',
-			hotkeys: [{ modifiers: ["Mod", "Shift"], key: "F5" }],
 			callback: () => { this.pick_adamantine_notes(); },
 		});
 		
