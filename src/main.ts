@@ -607,9 +607,9 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 		
 		new Setting(containerEl)
 			.setName('Sample')
-			.setDesc('Create once one builtin sample diagram note(requires plugin reload)')
+			.setDesc('Create once one builtin sample diagram note (requires plugin reload)')
 			.addDropdown(dropDown => {
-				dropDown.addOption('1', 'Cheat Sheet');
+				dropDown.addOption('1', 'Cheat sheet');
 				dropDown.addOption('2', 'Palindrome');
 				dropDown.addOption('3', 'Triforce');
 				dropDown.addOption('4', 'None');
@@ -623,7 +623,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			
 		new Setting(containerEl)
 			.setName('Theme')
-			.setDesc('Bleach background for PDF export(printing)')
+			.setDesc('Bleach background for PDF export (printing)')
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.bleach_diagram);
 				cb.onChange(async (value: boolean) => {
@@ -634,8 +634,8 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			});
 			
 		new Setting(containerEl)
-			.setName('Markdown Code Block Identifier')
-			.setDesc('What markdown code blocks to render(requires plugin reload)')
+			.setName('Markdown code block identifier')
+			.setDesc('What Markdown code blocks to render (requires plugin reload)')
 			.addText(text => text
 				.setPlaceholder('pikchr pick')
 				.setValue(this.plugin.settings.block_identify[0])
@@ -675,7 +675,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			
 		new Setting(containerEl)
 			.setName('Report status message after diagram into note')
-			.setDesc('height(px) width(px) size(byte) time(ms)')
+			.setDesc('Show height(px) width(px) size(byte) time(ms)')
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.output_diagram_stats);
 				cb.onChange(async (value: boolean) => {
@@ -686,7 +686,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			});
 		new Setting(containerEl)
 			.setName('Use local adamantine diagram notes JSON')
-			.setDesc('admantine-diagram-notes.json from plugin folder(for debug testing)')
+			.setDesc('Load admantine-diagram-notes.json from plugin folder (for debug testing)')
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.decode_locally);
 				cb.onChange(async (value: boolean) => {
