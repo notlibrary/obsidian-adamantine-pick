@@ -152,7 +152,7 @@ export class AdamantinePickProcessor implements Processor {
 	}
 	
 	dummy = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-		console.log(source);
+		console.debug(source);
 		return;
 	}
 	
@@ -297,7 +297,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	total_builtin_samples = 4;
 	
 	async onload(): Promise<void> {
-		console.log('loading adamantine pick plugin');
+		console.debug('loading adamantine pick plugin');
 		await this.loadSettings();
 		
 		const dark_mode_flag = this.get_dark_mode_flag();
@@ -334,7 +334,7 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
-				console.log(error.toString());
+				console.error(error.toString());
 			}
 			
 			const samples_list = this.settings.samples_list;
@@ -348,13 +348,13 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.saveSettings();
 			}
 			catch (error) {
-				console.log(error.toString());
+				console.error(error.toString());
 			}
 		}
 	}
 	
 	async onunload(): Promise<void> {
-		console.log('unloading adamantine pick plugin');
+		console.debug('unloading adamantine pick plugin');
 		
 	}
 
@@ -421,7 +421,7 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
-				console.log(error.toString());
+				console.error(error.toString());
 			}
 			
 			
@@ -429,34 +429,34 @@ export default class AdamantinePickPlugin extends Plugin {
 				const response: RequestUrlResponse = await requestUrl(options); 			
 				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
 			
-				if (this.settings.decode_locally) { console.log('download ' + zip_name + ' instead'); /* Read permissions import, nah */ }
+				if (this.settings.decode_locally) { console.warn('download ' + zip_name + ' instead'); /* Read permissions import, nah */ }
 				
 				adamantine_notes.forEach(async ( diagram_note, i ) => {
 					try {
 						
 						const filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
-						if ( diagram_note.filename.length > 8) { console.log( "Warning: not adamantine diagram note file name length > 8" + " index: " + i); }
+						if ( diagram_note.filename.length > 8) { console.warn( "Warning: not adamantine diagram note file name length > 8" + " index: " + i); }
 						const sha256digest = diagram_note.sha256digest; 
 						const decoded = this.decode_base64(diagram_note.base64content);
-						if ( decoded.length > 4096 ) { console.log("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
+						if ( decoded.length > 4096 ) { console.warn("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
 						const sha256in = sha256(decoded).toString();
 						if ( sha256digest === sha256in) {
-							console.log('SHA256 check success: ' + filename);
+							console.debug('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);
 						}
 						else {
-							console.log('Warning: not adamantine diagram note failed SHA256 check');
+							console.warn('Warning: not adamantine diagram note failed SHA256 check');
 						}
 					}
 					catch (error) {
-						console.log('failed to save ' + error.toString());
+						console.error('failed to save ' + error.toString());
 					}
 				});	
 			}
 			catch(error) {
-				console.log('failed to fetch ' + JSON.stringify(error));
+				console.error('failed to fetch ' + JSON.stringify(error));
 			}
-			console.log('successfully fetched adamantine diagram notes');			
+			console.debug('successfully fetched adamantine diagram notes');
 	}
 	
 	private output_builtin_diagram(index: number) {
@@ -600,7 +600,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				dropDown.addOption('3', 'Dummy');
 				dropDown.setValue(this.plugin.settings.encoder_type.toString());
 				dropDown.onChange(async (value) =>	{
-					console.log('render type: ' + value);
+					console.debug('render type: ' + value);
 					this.plugin.settings.encoder_type = parseInt(value);
 					await this.plugin.saveSettings();
 				});
@@ -616,7 +616,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				dropDown.addOption('4', 'None');
 				dropDown.setValue(this.plugin.settings.sample_to_render.toString());
 				dropDown.onChange(async (value) =>	{
-					console.log('render builtin sample: ' + value);
+					console.debug('render builtin sample: ' + value);
 					this.plugin.settings.sample_to_render = parseInt(value);
 					await this.plugin.saveSettings();
 				});
@@ -628,7 +628,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.bleach_diagram);
 				cb.onChange(async (value: boolean) => {
-					console.log('bleach diagram: ' + value);
+					console.debug('bleach diagram: ' + value);
 					this.plugin.settings.bleach_diagram = value;
 					await this.plugin.saveSettings();
 				});
@@ -643,7 +643,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					let valid = value.split(" ")[0];
 					if (valid.length > 1024) {valid = "pikchr"; }
-					console.log('md block id:' + valid);
+					console.debug('md block id:' + valid);
 					this.plugin.settings.block_identify[0] = valid; 
 					await this.plugin.saveSettings();
 				}));
@@ -657,7 +657,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					let valid = value.split(" ")[0];
 					if (valid.length > 1024) {valid = "adamantine"; }
-					console.log('pikchr output dom class: ' + valid);
+					console.debug('pikchr output dom class: ' + valid);
 					this.plugin.settings.output_dom_mark = valid;
 					await this.plugin.saveSettings();
 				}));
@@ -668,7 +668,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.preserve_diagram_debug_print);
 				cb.onChange(async (value: boolean) => {
-					console.log('preserve pikchr debug print: ' + value);
+					console.debug('preserve pikchr debug print: ' + value);
 					this.plugin.settings.preserve_diagram_debug_print = value;
 					await this.plugin.saveSettings();
 				});
@@ -680,7 +680,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.output_diagram_stats);
 				cb.onChange(async (value: boolean) => {
-					console.log('report diagram stats: ' + value);
+					console.debug('report diagram stats: ' + value);
 					this.plugin.settings.output_diagram_stats = value;
 					await this.plugin.saveSettings();
 				});
@@ -691,7 +691,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.addToggle(cb => {
 				cb.setValue(this.plugin.settings.decode_locally);
 				cb.onChange(async (value: boolean) => {
-					console.log('decode adamantine json locally: ' + value);
+					console.debug('decode adamantine json locally: ' + value);
 					this.plugin.settings.decode_locally = value;
 					await this.plugin.saveSettings();
 				});
