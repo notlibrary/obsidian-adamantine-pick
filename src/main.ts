@@ -140,7 +140,10 @@ export class AdamantinePickProcessor implements Processor {
 				this.get_artifact_version = factory.instance.exports.pick_version;
 				this.factory = factory;
 				this.dom_class_ptr = createCString(this.factory, this.dom_mark);
-		});
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	
 		this.parser = new DOMParser();
 	}
@@ -318,10 +321,10 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.addCommand({
 			id: 'pick-adamantine-notes',
 			name: 'Adamantine Pick',
-			callback: () => { this.pick_adamantine_notes(); },
+			callback: async () => { await this.pick_adamantine_notes(); },
 		});
 		
-		this.note_builtin_diagram();
+		await this.note_builtin_diagram();
 	}
 	
 	private async note_builtin_diagram() {
@@ -351,7 +354,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		}
 	}
 	
-	async onunload(): Promise<void> {
+	onunload(): void {
 		console.debug('unloading adamantine pick plugin');
 		
 	}
@@ -366,7 +369,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	}
 	
 	private is_dark_mode() {
-		let theme = this.app.vault.getConfig("theme");
+		const theme = this.app.vault.getConfig("theme");
 		if (theme === "obsidian") return true;
 		if (theme === "moonstone") return false;
 		if (theme === "system")
@@ -429,7 +432,7 @@ export default class AdamantinePickPlugin extends Plugin {
 			
 				if (this.settings.decode_locally) { console.warn('download ' + zip_name + ' instead'); /* Read permissions import, nah */ }
 				
-				adamantine_notes.forEach(async ( diagram_note, i ) => {
+				await Promise.all(adamantine_notes.map(async ( diagram_note, i ) => {
 					try {
 						
 						const filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
@@ -451,7 +454,7 @@ export default class AdamantinePickPlugin extends Plugin {
 					catch (error) {
 						console.error('failed to save ' + error.toString());
 					}
-				});	
+				}));
 			}
 			catch(error) {
 				console.error('failed to fetch ' + JSON.stringify(error));
