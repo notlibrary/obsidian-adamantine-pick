@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from 'builtin-modules'
+import { builtinModules } from 'node:module'
 
 import path from 'node:path'
 import fs from 'node:fs'
@@ -43,7 +43,7 @@ https://github.com/notlibrary/obsidian-adamantine-pick
 
 const prod = (process.argv[2] === 'production');
 
-esbuild.build({
+const options = {
 	banner: {
 		js: banner,
 	},
@@ -53,13 +53,19 @@ esbuild.build({
 	external: [
 		"obsidian",
 		"electron",
-		...builtins],
+		...builtinModules],
 	format: 'cjs',
-	watch: !prod,
 	target: 'es2018',
 	logLevel: "info",
 	sourcemap: prod ? false : 'inline',
 	minify: prod ? true : false,
 	treeShaking: true,
 	outfile: 'main.js',
-}).catch(() => process.exit(1));
+};
+
+if (prod) {
+  esbuild.build(options).catch(() => process.exit(1));
+} else {
+  let context = await esbuild.context(options);
+  context.watch().catch(() => process.exit(1));
+}
