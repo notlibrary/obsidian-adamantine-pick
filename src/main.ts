@@ -1,5 +1,4 @@
 import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
-import sha256 from 'crypto-js/sha256';
 /*
 	declare function require(name:string);
 	import factory = require("./pick.js");
@@ -438,7 +437,9 @@ export default class AdamantinePickPlugin extends Plugin {
 						const sha256digest = diagram_note.sha256digest; 
 						const decoded = this.decode_base64(diagram_note.base64content);
 						if ( decoded.length > 4096 ) { console.warn("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
-						const sha256in = sha256(decoded).toString();
+						const utf8 = new TextEncoder().encode(decoded);
+						const hash = await window.crypto.subtle.digest("SHA-256", utf8);
+						const sha256in = new Uint8Array(hash).toHex();
 						if ( sha256digest === sha256in) {
 							console.debug('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);
