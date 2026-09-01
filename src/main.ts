@@ -213,45 +213,43 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_handler (encodedDiagram, el, ctx);		
 	}
 	
-	diagram_handler = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext ) => {				
-		
+	diagram_handler = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {				
 		const length = source.length;	
-		if ((length <=30) && (source == "<!-- empty pikchr diagram -->\n")) {
-			el.createSpan({ text: source});
-			el.createSpan({ text: "[Adamantine Pick] Empty diagram returned"}); 
+		if ((length <= 30) && (source === "<!-- empty pikchr diagram -->\n")) {
+			el.createSpan({ text: source });
+			el.createSpan({ text: "[Adamantine Pick] Empty diagram returned" }); 
 			return;
 		}		
 
 		const svg = this.parser.parseFromString(source, "text/html");
-		
-		const diagrams =  Array.from(svg.getElementsByTagName("svg"));
+		const diagrams = Array.from(svg.getElementsByTagName("svg"));
 		
 		if (!Array.isArray(diagrams) || !diagrams.length) { 
-			el.insertAdjacentHTML('beforeend', svg.body.innerHTML);
+			el.append(...Array.from(svg.body.childNodes));
+			
 			if (this.report) {
 				el.createDiv({ text: "[Adamantine Pick] Diagram debug prints and Pikchr syntax errors dumped above" });
 			}
 		}
 		
-		diagrams.forEach( ( diagram, i ) => {	
+		diagrams.forEach((diagram, i) => {	
 			if (this.render_type === 1) {
 				if (this.preserve_diagram_debug_print) {
-					el.insertAdjacentHTML('beforeend', svg.body.innerHTML);
+					el.append(...Array.from(svg.body.childNodes));
+				} else {
+					el.append(diagram);
 				}
-				else {
-					el.insertAdjacentHTML('beforeend', diagram.outerHTML);
-				}
-			}
-			else if(this.render_type === 2) {
+			} else if (this.render_type === 2) {
 				el.createDiv({ text: source });
 			}
 			
 			if (this.report) {
-				el.createDiv({ text:  "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + (Date.now() - this.timestamp) });
+				el.createDiv({ text: "[Adamantine Pick] height(px):" + this.diagram_height + "; width(px):" + this.diagram_width + "; length(byte):" + length + "; time(ms): " + (Date.now() - this.timestamp) });
 			}
 		});
 		this.postprocessor.svg(el, ctx);
 	}
+
 	
 }
 
