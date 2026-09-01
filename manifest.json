@@ -1,7 +1,7 @@
 {
   "id": "adamantine-pick",
   "name": "Adamantine Pick",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "minAppVersion": "0.9.7",
   "description": "Embeddable Pikchr(https://pikchr.org) diagrams renderer for Obsidian(https://obsidian.md).",
   "author": "Urist McMiner",
