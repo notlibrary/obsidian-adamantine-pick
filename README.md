@@ -69,7 +69,8 @@ Test installing
 
 ## Picking up and Pushing adamantine diagram notes
 
-To pick up adamantine diagram notes use separate "Adamantine Pick" command <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd>
+To pick up adamantine diagram notes use separate "Adamantine Pick" command 
+Bind <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F5</kbd> to execute it
 If it has internet it will try to fetch(request) JSON `adamantine-diagram-notes.json` with entire notes 
 collection from GitHub plugin release page then check it decode and generate notes in your `VaultFolder/adamantine`
 
