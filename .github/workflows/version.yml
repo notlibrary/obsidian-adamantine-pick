@@ -22,7 +22,7 @@ jobs:
 
     # Bump the version number
     - name: Update Version
-      uses: MCKanpolat/auto-semver-action@v2
+      uses: MCKanpolat/auto-semver-action@v3
       id: version
       with:
         releaseType: ${{ github.event.inputs.type }}
