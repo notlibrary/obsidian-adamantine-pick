@@ -3,7 +3,7 @@ import obsidianmd from "eslint-plugin-obsidianmd";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["main.js"]),
+  globalIgnores(["main.js", "src/pick.js"]),
   ...obsidianmd.configs.recommended,
   {
     files: ["**/*.ts"],

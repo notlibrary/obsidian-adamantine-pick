@@ -140,7 +140,10 @@ export class AdamantinePickProcessor implements Processor {
 				this.get_artifact_version = factory.instance.exports.pick_version;
 				this.factory = factory;
 				this.dom_class_ptr = createCString(this.factory, this.dom_mark);
-		});
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	
 		this.parser = new DOMParser();
 	}
@@ -257,7 +260,7 @@ export class AdamantinePickPostProcessor implements Postprocessor {
 	dom_mark: string;
 	counter = 0;
 	
-	constructor( diagram_proc: AdamantinePickProcessor, dom_mark ) {
+	constructor( diagram_proc: AdamantinePickProcessor, dom_mark: string ) {
 		this.visited = {};
 		this.dom_mark = dom_mark;
 		diagram_proc.postprocessor = this;
@@ -318,10 +321,10 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.addCommand({
 			id: 'pick-adamantine-notes',
 			name: 'Adamantine Pick',
-			callback: () => { this.pick_adamantine_notes(); },
+			callback: async () => { await this.pick_adamantine_notes(); },
 		});
 		
-		this.note_builtin_diagram();
+		await this.note_builtin_diagram();
 	}
 	
 	private async note_builtin_diagram() {
@@ -332,7 +335,7 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
-				console.error(error.toString());
+				console.error(error);
 			}
 			
 			const samples_list = this.settings.samples_list;
@@ -346,18 +349,18 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.saveSettings();
 			}
 			catch (error) {
-				console.error(error.toString());
+				console.error(error);
 			}
 		}
 	}
 	
-	async onunload(): Promise<void> {
+	onunload(): void {
 		console.debug('unloading adamantine pick plugin');
 		
 	}
 
 	async loadSettings(): Promise<void>  {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as AdamantinePickSettings);
 	}
 	
 	private get_dark_mode_flag() {
@@ -366,7 +369,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	}
 	
 	private is_dark_mode() {
-		let theme = this.app.vault.getConfig("theme");
+		const theme = this.app.vault.getConfig("theme");
 		if (theme === "obsidian") return true;
 		if (theme === "moonstone") return false;
 		if (theme === "system")
@@ -385,7 +388,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 	
-	private decode_base64(base64) {
+	private decode_base64(base64: string) {
 		const input_text = atob(base64);
 		const length = input_text.length;
 		const bytes = new Uint8Array(length);
@@ -419,17 +422,17 @@ export default class AdamantinePickPlugin extends Plugin {
 				await this.app.vault.createFolder(dir);
 			}
 			catch (error) {
-				console.error(error.toString());
+				console.error(error);
 			}
 			
 			
 			try {
 				const response: RequestUrlResponse = await requestUrl(options); 			
-				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text);
+				const adamantine_notes: AdamantineDiagramNote[] = JSON.parse(response.text) as AdamantineDiagramNote[];
 			
 				if (this.settings.decode_locally) { console.warn('download ' + zip_name + ' instead'); /* Read permissions import, nah */ }
 				
-				adamantine_notes.forEach(async ( diagram_note, i ) => {
+				await Promise.all(adamantine_notes.map(async ( diagram_note, i ) => {
 					try {
 						
 						const filename = normalizePath(output_folder + "/" + diagram_note.filename + ".md");
@@ -439,7 +442,9 @@ export default class AdamantinePickPlugin extends Plugin {
 						if ( decoded.length > 4096 ) { console.warn("Warning: not adamantine diagram note size > 4096 bytes" + " index: " + i); }
 						const utf8 = new TextEncoder().encode(decoded);
 						const hash = await window.crypto.subtle.digest("SHA-256", utf8);
-						const sha256in = new Uint8Array(hash).toHex();
+						const sha256in = Array.from(new Uint8Array(hash))
+						  .map((b) => b.toString(16).padStart(2, "0"))
+						  .join("");
 						if ( sha256digest === sha256in) {
 							console.debug('SHA256 check success: ' + filename);
 							await this.app.vault.create(filename, decoded);
@@ -449,9 +454,9 @@ export default class AdamantinePickPlugin extends Plugin {
 						}
 					}
 					catch (error) {
-						console.error('failed to save ' + error.toString());
+						console.error('failed to save', error);
 					}
-				});	
+				}));
 			}
 			catch(error) {
 				console.error('failed to fetch ' + JSON.stringify(error));
