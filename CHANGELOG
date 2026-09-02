@@ -1,7 +1,13 @@
+02-Sep 2026 0.5.7
+Adamantine Pick Plugin for Obsidian
+Second part of maintenance release(new contributor @benbatt)
+Added AGENTS.md
+Fixed dozens of harmless linter warnings in plugin score card
+
 01-Sep 2026 0.5.6
 Adamantine Pick Plugin for Obsidian
 Maintenance build(new contributor @benbatt)
-Adopted Conventionsl commits
+Adopted Conventional commits
 Fixed dozens of harmless warnings in plugin score card
 
 04-Apr 2026 0.5.5
