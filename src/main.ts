@@ -129,6 +129,9 @@ export class AdamantinePickProcessor implements Processor {
 	
 	constructor(render_type: number | string, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
 		this.render_type = Number(render_type);
+		if (!Number.isFinite(this.render_type) || this.render_type < 1 || this.render_type > 3) {
+			this.render_type = 1;
+		}
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
 		this.report = report;
@@ -153,7 +156,15 @@ export class AdamantinePickProcessor implements Processor {
 	}
 	
 	update_dom_mark() {
-		this.factory.instance.exports.free(this.dom_class_ptr);
+		// WASM initialization is asynchronous. Settings can be changed before
+		// instantiate() has completed, so never dereference an uninitialized factory.
+		if (!this.factory || !this.factory.instance || !this.factory.instance.exports) {
+			return;
+		}
+
+		if (this.dom_class_ptr) {
+			this.factory.instance.exports.free(this.dom_class_ptr);
+		}
 		this.dom_class_ptr = createCString(this.factory, this.dom_mark);
 	}
 	
@@ -368,8 +379,53 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 	}
 
-	async loadSettings(): Promise<void>  {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as AdamantinePickSettings);
+	async loadSettings(): Promise<void> {
+		const saved = await this.loadData() as Partial<AdamantinePickSettings> | null;
+
+		// Merge every setting explicitly. This also repairs old/corrupt settings
+		// without losing defaults when a newer setting was not saved yet.
+		this.settings = {
+			...DEFAULT_SETTINGS,
+			...(saved || {})
+		};
+
+		if (typeof this.settings.block_identify !== 'string' ||
+			!this.settings.block_identify.trim() ||
+			this.settings.block_identify === '1') {
+			this.settings.block_identify = DEFAULT_SETTINGS.block_identify;
+		}
+
+		if (typeof this.settings.output_dom_mark !== 'string' ||
+			!this.settings.output_dom_mark.trim()) {
+			this.settings.output_dom_mark = DEFAULT_SETTINGS.output_dom_mark;
+		}
+
+		if (![1, 2, 3].includes(Number(this.settings.encoder_type))) {
+			this.settings.encoder_type = DEFAULT_SETTINGS.encoder_type;
+		} else {
+			this.settings.encoder_type = Number(this.settings.encoder_type);
+		}
+
+		if (![1, 2, 3, 4].includes(Number(this.settings.sample_to_render))) {
+			this.settings.sample_to_render = DEFAULT_SETTINGS.sample_to_render;
+		} else {
+			this.settings.sample_to_render = Number(this.settings.sample_to_render);
+		}
+
+		if (!Array.isArray(this.settings.samples_list) ||
+			this.settings.samples_list.length < this.total_builtin_samples) {
+			this.settings.samples_list = [...DEFAULT_SETTINGS.samples_list];
+		}
+
+		if (typeof this.settings.samples_dir !== 'string' || !this.settings.samples_dir.trim()) {
+			this.settings.samples_dir = DEFAULT_SETTINGS.samples_dir;
+		}
+
+		if (typeof this.settings.adamantine_dir !== 'string' || !this.settings.adamantine_dir.trim()) {
+			this.settings.adamantine_dir = DEFAULT_SETTINGS.adamantine_dir;
+		}
+
+		await this.saveData(this.settings);
 	}
 	
 	private get_dark_mode_flag() {
@@ -383,18 +439,29 @@ export default class AdamantinePickPlugin extends Plugin {
 		if (theme === "moonstone") return false;
 		if (theme === "system")
 			return !document.body.classList.contains('theme-light');
+		return document.body.classList.contains('theme-dark');
 	}
 	
-	async saveSettings(): Promise<void>  {
-		
-		this.diagram_processor.render_type = this.settings.encoder_type;
-		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
-		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
-		this.diagram_processor.update_dom_mark();
-		this.diagram_processor.report = this.settings.output_diagram_stats;
-		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
-	
+	async saveSettings(): Promise<void> {
+		// Persist first. The settings tab can be opened/updated while WASM is
+		// still initializing, so processor updates must be guarded.
 		await this.saveData(this.settings);
+
+		if (!this.diagram_processor) {
+			return;
+		}
+
+		this.diagram_processor.render_type = Number(this.settings.encoder_type);
+		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
+		this.diagram_processor.report = Boolean(this.settings.output_diagram_stats);
+		this.diagram_processor.preserve_diagram_debug_print =
+			Boolean(this.settings.preserve_diagram_debug_print);
+
+		const newDomMark = String(this.settings.output_dom_mark || DEFAULT_SETTINGS.output_dom_mark);
+		if (this.diagram_processor.dom_mark !== newDomMark) {
+			this.diagram_processor.dom_mark = newDomMark;
+			this.diagram_processor.update_dom_mark();
+		}
 	}
 	
 	private decode_base64(base64: string) {
@@ -617,8 +684,15 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			validValue = Number(value);
 		}
 
-		if (key === 'block_identify' && value.split(" ")[0].length > 1024) validValue = "pikchr";
-		if (key === 'output_dom_mark' && value.split(" ")[0].length > 1024) validValue = "adamantine";
+		if (key === 'block_identify') {
+			validValue = typeof value === 'string' ? value.trim().split(/\s+/)[0] : 'pikchr';
+			if (!validValue || validValue.length > 1024) validValue = 'pikchr';
+		}
+
+		if (key === 'output_dom_mark') {
+			validValue = typeof value === 'string' ? value.trim().split(/\s+/)[0] : 'adamantine';
+			if (!validValue || validValue.length > 1024) validValue = 'adamantine';
+		}
 
 		(this.plugin.settings as any)[key] = validValue;
 		await this.plugin.saveSettings();
