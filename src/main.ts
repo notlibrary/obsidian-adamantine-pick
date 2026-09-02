@@ -303,6 +303,13 @@ export default class AdamantinePickPlugin extends Plugin {
 	async onload(): Promise<void> {
 		console.debug('loading adamantine pick plugin');
 		await this.loadSettings();
+
+		// Ensure the Markdown code block identifier always has a valid
+		// default. Older settings may contain an invalid value such as "1".
+		if (!this.settings.block_identify || this.settings.block_identify === "1") {
+			this.settings.block_identify = "pikchr";
+			await this.saveData(this.settings);
+		}
 		
 		const dark_mode_flag = this.get_dark_mode_flag();
 		const dom_mark = this.settings.output_dom_mark;
@@ -314,7 +321,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.diagram_processor.plugin_ptr = this;
 		this.banshee = new AdamantinePickPostProcessor(this.diagram_processor, dom_mark);
 		
-		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify[0], this.diagram_processor.encoder);
+		this.registerMarkdownCodeBlockProcessor(this.settings.block_identify, this.diagram_processor.encoder);
 		this.registerMarkdownPostProcessor(this.banshee.svg);	
 		this.registerEvent(this.app.workspace.on('file-open', () => { this.banshee.counter = 0; this.banshee.visited = {}; }));
 		
@@ -663,7 +670,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
 				control: {
 					type: 'text',
-					placeholder: 'pikchr pick'
+					placeholder: 'pikchr'
 				}
 			},
 			{
