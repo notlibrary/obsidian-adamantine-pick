@@ -60,8 +60,8 @@ export const receiveCString = (module, address) => {
 export interface AdamantinePickSettings {
 	block_identify: string; 
 	output_dom_mark: string;
-	encoder_type: string;   
-	sample_to_render: string; 
+	encoder_type: number;   
+	sample_to_render: number; 
 	bleach_diagram: boolean;
 	output_diagram_stats: boolean;
 	preserve_diagram_debug_print: boolean;
@@ -74,8 +74,8 @@ export interface AdamantinePickSettings {
 export const DEFAULT_SETTINGS: AdamantinePickSettings = {
 	block_identify: 'pikchr', 
 	output_dom_mark: 'adamantine',
-	encoder_type: '1',        
-	sample_to_render: '4',    
+	encoder_type: 1,        
+	sample_to_render: 4,    
 	bleach_diagram: false,
 	output_diagram_stats: false,
 	preserve_diagram_debug_print: true,
@@ -127,8 +127,8 @@ export class AdamantinePickProcessor implements Processor {
 	factory: WebAssemblyInstantiatedSource;
 	dom_class_ptr:number;
 	
-	constructor(render_type: number, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
-		this.render_type = render_type;
+	constructor(render_type: number | string, mFlags: number, dom_mark: string, report: boolean, preserve: boolean) {
+		this.render_type = Number(render_type);
 		this.dark_mode = mFlags;
 		this.dom_mark = dom_mark;
 		this.report = report;
@@ -602,6 +602,14 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 	override async setControlValue(key: string, value: any): Promise<void> {
 		let validValue = value;
 
+		if (key === 'encoder_type') {
+			validValue = Number(value);
+		}
+
+		if (key === 'sample_to_render') {
+			validValue = Number(value);
+		}
+
 		if (key === 'block_identify' && value.split(" ")[0].length > 1024) validValue = "pikchr";
 		if (key === 'output_dom_mark' && value.split(" ")[0].length > 1024) validValue = "adamantine";
 
@@ -649,7 +657,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				control: { type: 'toggle' }
 			},
 			{
-				id: 'block_identify_0',
+				id: 'block_identify',
 				type: 'control',
 				name: 'Markdown code block identifier',
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
@@ -692,4 +700,3 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 		];
 	}
 }
-
