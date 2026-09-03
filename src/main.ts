@@ -379,53 +379,10 @@ export default class AdamantinePickPlugin extends Plugin {
 		
 	}
 
-	async loadSettings(): Promise<void> {
-		const saved = await this.loadData() as Partial<AdamantinePickSettings> | null;
-
-		// Merge every setting explicitly. This also repairs old/corrupt settings
-		// without losing defaults when a newer setting was not saved yet.
-		this.settings = {
-			...DEFAULT_SETTINGS,
-			...(saved || {})
-		};
-
-		if (typeof this.settings.block_identify !== 'string' ||
-			!this.settings.block_identify.trim() ||
-			this.settings.block_identify === '1') {
-			this.settings.block_identify = DEFAULT_SETTINGS.block_identify;
-		}
-
-		if (typeof this.settings.output_dom_mark !== 'string' ||
-			!this.settings.output_dom_mark.trim()) {
-			this.settings.output_dom_mark = DEFAULT_SETTINGS.output_dom_mark;
-		}
-
-		if (![1, 2, 3].includes(Number(this.settings.encoder_type))) {
-			this.settings.encoder_type = DEFAULT_SETTINGS.encoder_type;
-		} else {
-			this.settings.encoder_type = Number(this.settings.encoder_type);
-		}
-
-		if (![1, 2, 3, 4].includes(Number(this.settings.sample_to_render))) {
-			this.settings.sample_to_render = DEFAULT_SETTINGS.sample_to_render;
-		} else {
-			this.settings.sample_to_render = Number(this.settings.sample_to_render);
-		}
-
-		if (!Array.isArray(this.settings.samples_list) ||
-			this.settings.samples_list.length < this.total_builtin_samples) {
-			this.settings.samples_list = [...DEFAULT_SETTINGS.samples_list];
-		}
-
-		if (typeof this.settings.samples_dir !== 'string' || !this.settings.samples_dir.trim()) {
-			this.settings.samples_dir = DEFAULT_SETTINGS.samples_dir;
-		}
-
-		if (typeof this.settings.adamantine_dir !== 'string' || !this.settings.adamantine_dir.trim()) {
-			this.settings.adamantine_dir = DEFAULT_SETTINGS.adamantine_dir;
-		}
-
-		await this.saveData(this.settings);
+	
+	
+	async loadSettings(): Promise<void>  {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as AdamantinePickSettings);
 	}
 	
 	private get_dark_mode_flag() {
@@ -439,29 +396,17 @@ export default class AdamantinePickPlugin extends Plugin {
 		if (theme === "moonstone") return false;
 		if (theme === "system")
 			return !document.body.classList.contains('theme-light');
-		return document.body.classList.contains('theme-dark');
 	}
 	
-	async saveSettings(): Promise<void> {
-		// Persist first. The settings tab can be opened/updated while WASM is
-		// still initializing, so processor updates must be guarded.
-		await this.saveData(this.settings);
-
-		if (!this.diagram_processor) {
-			return;
-		}
-
-		this.diagram_processor.render_type = Number(this.settings.encoder_type);
+	async saveSettings(): Promise<void>  {
+		
+		this.diagram_processor.render_type = this.settings.encoder_type;
 		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
-		this.diagram_processor.report = Boolean(this.settings.output_diagram_stats);
-		this.diagram_processor.preserve_diagram_debug_print =
-			Boolean(this.settings.preserve_diagram_debug_print);
-
-		const newDomMark = String(this.settings.output_dom_mark || DEFAULT_SETTINGS.output_dom_mark);
-		if (this.diagram_processor.dom_mark !== newDomMark) {
-			this.diagram_processor.dom_mark = newDomMark;
-			this.diagram_processor.update_dom_mark();
-		}
+		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
+		this.diagram_processor.report = this.settings.output_diagram_stats;
+		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
+	
+		await this.saveData(this.settings);
 	}
 	
 	private decode_base64(base64: string) {
@@ -661,6 +606,55 @@ export default class AdamantinePickPlugin extends Plugin {
 
 import { App, PluginSettingTab, SettingDefinitionItem } from 'obsidian';
 
+import { App, PluginSettingTab, Setting } from 'obsidian';
+
+interface DropdownControl {
+	type: 'dropdown';
+	options: Record<string, string>;
+}
+
+interface ToggleControl {
+	type: 'toggle';
+}
+
+interface TextControl {
+	type: 'text';
+	placeholder?: string;
+}
+
+interface SettingDefinitionItem {
+	id: string;
+	type: 'control';
+	name: string;
+	desc: string;
+	control: DropdownControl | ToggleControl | TextControl;
+}
+
+import { App, PluginSettingTab, Setting } from 'obsidian';
+
+
+interface DropdownControl {
+	type: 'dropdown';
+	options: Record<string, string>;
+}
+
+interface ToggleControl {
+	type: 'toggle';
+}
+
+interface TextControl {
+	type: 'text';
+	placeholder?: string;
+}
+
+interface SettingDefinitionItem {
+	id: keyof AdamantinePickSettings; 
+	type: 'control';
+	name: string;
+	desc: string;
+	control: DropdownControl | ToggleControl | TextControl;
+}
+
 export class AdamantinePickSettingsTab extends PluginSettingTab {
 	plugin: AdamantinePickPlugin;
 
@@ -669,115 +663,209 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	override getControlValue(key: string): any {
-		return (this.plugin.settings as any)[key];
+	display(): void {
+		const {containerEl} = this;
+
+		containerEl.empty();
+		
+		new Setting(containerEl)
+			.setName('Encoder')
+			.setDesc('Render type')
+			.addDropdown(dropDown => {
+				dropDown.addOption('1', 'SVG');
+				dropDown.addOption('2', 'Text');
+				dropDown.addOption('3', 'Dummy');
+				dropDown.setValue(this.plugin.settings.encoder_type.toString());
+				dropDown.onChange(async (value) =>	{
+					console.debug('render type: ' + value);
+					this.plugin.settings.encoder_type = parseInt(value);
+					await this.plugin.saveSettings();
+				});
+			});
+		
+		new Setting(containerEl)
+			.setName('Sample')
+			.setDesc('Create once one builtin sample diagram note (requires plugin reload)')
+			.addDropdown(dropDown => {
+				dropDown.addOption('1', 'Cheat sheet');
+				dropDown.addOption('2', 'Palindrome');
+				dropDown.addOption('3', 'Triforce');
+				dropDown.addOption('4', 'None');
+				dropDown.setValue(this.plugin.settings.sample_to_render.toString());
+				dropDown.onChange(async (value) =>	{
+					console.debug('render builtin sample: ' + value);
+					this.plugin.settings.sample_to_render = parseInt(value);
+					await this.plugin.saveSettings();
+				});
+			});
+			
+		new Setting(containerEl)
+			.setName('Theme')
+			.setDesc('Bleach background for PDF export (printing)')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.bleach_diagram);
+				cb.onChange(async (value: boolean) => {
+					console.debug('bleach diagram: ' + value);
+					this.plugin.settings.bleach_diagram = value;
+					await this.plugin.saveSettings();
+				});
+			});
+			
+		new Setting(containerEl)
+			.setName('Markdown code block identifier')
+			.setDesc('What Markdown code blocks to render (requires plugin reload)')
+			.addText(text => text
+				.setPlaceholder('pikchr pick')
+				.setValue(this.plugin.settings.block_identifier)
+				.onChange(async (value) => {
+					let valid = value.split(" ")[0];
+					if (valid.length > 1024) {valid = "pikchr"; }
+					console.debug('md block id:' + valid);
+					this.plugin.settings.block_identifier = valid; 
+					await this.plugin.saveSettings();
+				}));
+		
+		new Setting(containerEl)
+			.setName('DOM class of output')
+			.setDesc('Mark DOM class of pikchr output')
+			.addText(text => text
+				.setPlaceholder('adamantine')
+				.setValue(this.plugin.settings.output_dom_mark)
+				.onChange(async (value) => {
+					let valid = value.split(" ")[0];
+					if (valid.length > 1024) {valid = "adamantine"; }
+					console.debug('pikchr output dom class: ' + valid);
+					this.plugin.settings.output_dom_mark = valid;
+					await this.plugin.saveSettings();
+				}));
+				
+		new Setting(containerEl)
+			.setName('Preserve diagram debug print')
+			.setDesc('Preserve inner diagram print calls that outputs lines before DOM SVG element')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.preserve_diagram_debug_print);
+				cb.onChange(async (value: boolean) => {
+					console.debug('preserve pikchr debug print: ' + value);
+					this.plugin.settings.preserve_diagram_debug_print = value;
+					await this.plugin.saveSettings();
+				});
+			});
+			
+		new Setting(containerEl)
+			.setName('Report status message after diagram into note')
+			.setDesc('Show height(px) width(px) size(byte) time(ms)')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.output_diagram_stats);
+				cb.onChange(async (value: boolean) => {
+					console.debug('report diagram stats: ' + value);
+					this.plugin.settings.output_diagram_stats = value;
+					await this.plugin.saveSettings();
+				});
+			});
+		new Setting(containerEl)
+			.setName('Use local adamantine diagram notes JSON')
+			.setDesc('Load admantine-diagram-notes.json from plugin folder (for debug testing)')
+			.addToggle(cb => {
+				cb.setValue(this.plugin.settings.decode_locally);
+				cb.onChange(async (value: boolean) => {
+					console.debug('decode adamantine json locally: ' + value);
+					this.plugin.settings.decode_locally = value;
+					await this.plugin.saveSettings();
+				});
+			});
 	}
 
-	override async setControlValue(key: string, value: any): Promise<void> {
-		let validValue = value;
+	getSettingDefinitions(): SettingDefinitionItem<string>[] {
+		const rejectSpaces = (value: string) => /\s/.test(value) ? "Cannot contain spaces" : undefined;
 
-		if (key === 'encoder_type') {
-			validValue = Number(value);
-		}
-
-		if (key === 'sample_to_render') {
-			validValue = Number(value);
-		}
-
-		if (key === 'block_identify') {
-			validValue = typeof value === 'string' ? value.trim().split(/\s+/)[0] : 'pikchr';
-			if (!validValue || validValue.length > 1024) validValue = 'pikchr';
-		}
-
-		if (key === 'output_dom_mark') {
-			validValue = typeof value === 'string' ? value.trim().split(/\s+/)[0] : 'adamantine';
-			if (!validValue || validValue.length > 1024) validValue = 'adamantine';
-		}
-
-		(this.plugin.settings as any)[key] = validValue;
-		await this.plugin.saveSettings();
-	}
-
-
-	getSettingDefinitions(): SettingDefinitionItem[] {
 		return [
 			{
-				id: 'encoder_type',
-				type: 'control',
 				name: 'Encoder',
 				desc: 'Render type',
-				control: {
-					type: 'dropdown',
-					options: {
-						'1': 'SVG',
-						'2': 'Text',
-						'3': 'Dummy'
-					}
-				}
+				render: (setting) => {
+					setting.addDropdown(dropDown => {
+						dropDown.addOption('1', 'SVG');
+						dropDown.addOption('2', 'Text');
+						dropDown.addOption('3', 'Dummy');
+						dropDown.setValue(this.plugin.settings.encoder_type.toString());
+						dropDown.onChange(async (value) =>	{
+							console.debug('render type: ' + value);
+							this.plugin.settings.encoder_type = parseInt(value);
+							await this.plugin.saveSettings();
+						});
+					});
+				},
 			},
 			{
-				id: 'sample_to_render',
-				type: 'control',
 				name: 'Sample',
 				desc: 'Create once one builtin sample diagram note (requires plugin reload)',
+				render: (setting) => {
+					setting.addDropdown(dropDown => {
+						dropDown.addOption('1', 'Cheat sheet');
+						dropDown.addOption('2', 'Palindrome');
+						dropDown.addOption('3', 'Triforce');
+						dropDown.addOption('4', 'None');
+						dropDown.setValue(this.plugin.settings.sample_to_render.toString());
+						dropDown.onChange(async (value) =>	{
+							console.debug('render builtin sample: ' + value);
+							this.plugin.settings.sample_to_render = parseInt(value);
+							await this.plugin.saveSettings();
+						});
+					});
+				},
+			},
+			{
+				name: 'Theme',
+				desc: 'Bleach background for PDF export (printing)',
 				control: {
-					type: 'dropdown',
-					options: {
-						'1': 'Cheat sheet',
-						'2': 'Palindrome',
-						'3': 'Triforce',
-						'4': 'None'
-					}
+					type: 'toggle',
+					key: 'bleach_diagram',
 				}
 			},
 			{
-				id: 'bleach_diagram',
-				type: 'control',
-				name: 'Theme',
-				desc: 'Bleach background for PDF export (printing)',
-				control: { type: 'toggle' }
-			},
-			{
-				id: 'block_identify',
-				type: 'control',
 				name: 'Markdown code block identifier',
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
 				control: {
 					type: 'text',
-					placeholder: 'pikchr'
+					key: 'block_identifier',
+					placeholder: 'pikchr',
+					validate: rejectSpaces,
 				}
 			},
 			{
-				id: 'output_dom_mark',
-				type: 'control',
 				name: 'DOM class of output',
 				desc: 'Mark DOM class of pikchr output',
 				control: {
 					type: 'text',
-					placeholder: 'adamantine'
-				}
+					key: 'output_dom_mark',
+					placeholder: 'adamantine',
+					validate: rejectSpaces,
+				},
 			},
 			{
-				id: 'preserve_diagram_debug_print',
-				type: 'control',
 				name: 'Preserve diagram debug print',
 				desc: 'Preserve inner diagram print calls that outputs lines before DOM SVG element',
-				control: { type: 'toggle' }
+				control: {
+					type: 'toggle',
+					key: 'preserve_diagram_debug_print',
+				},
 			},
 			{
-				id: 'output_diagram_stats',
-				type: 'control',
 				name: 'Report status message after diagram into note',
 				desc: 'Show height(px) width(px) size(byte) time(ms)',
-				control: { type: 'toggle' }
+				control: {
+					type: 'toggle',
+					key: 'output_diagram_stats',
+				},
 			},
 			{
-				id: 'decode_locally',
-				type: 'control',
 				name: 'Use local adamantine diagram notes JSON',
 				desc: 'Load admantine-diagram-notes.json from plugin folder (for debug testing)',
-				control: { type: 'toggle' }
-			}
+				control: {
+					type: 'toggle',
+					key: 'decode_locally',
+				},
+			},
 		];
 	}
 }
