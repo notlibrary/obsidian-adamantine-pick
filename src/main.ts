@@ -186,7 +186,24 @@ export class AdamantinePickProcessor implements Processor {
 	}
 	
     svg = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-		const factory = this.factory;
+			const factory = this.factory;
+
+	// WASM is not ready yet.
+	if (
+		!factory ||
+		!factory.instance ||
+		!factory.instance.exports ||
+		!this.pikchr ||
+		!this.get_height ||
+		!this.get_width ||
+		!this.get_artifact_version ||
+		!this.dom_class_ptr
+	) {
+		console.debug(
+			'[Adamantine Pick] WASM not initialized yet; skipping render'
+		);
+		return;
+	}
 		/* 
 		   Space or newline at the end of file in reading mode in source at the end of codeblock 
 		   Source are different strings in reading and editing mode lol
@@ -374,6 +391,42 @@ export default class AdamantinePickPlugin extends Plugin {
 		}
 	}
 	
+	rerenderDiagrams(): void {
+	if (!this.diagram_processor) {
+		return;
+	}
+
+	this.app.workspace.iterateAllLeaves((leaf) => {
+		const view = leaf.view as any;
+
+		try {
+			/*
+			 * Reading view.
+			 *
+			 * Obsidian's Markdown preview exposes rerender()
+			 * through previewMode.
+			 */
+			if (view?.previewMode?.rerender) {
+				view.previewMode.rerender(true);
+				return;
+			}
+
+			/*
+			 * Some Obsidian versions expose the Markdown preview
+			 * differently.
+			 */
+			if (view?.previewMode?.renderer?.rerender) {
+				view.previewMode.renderer.rerender(true);
+			}
+		} catch (error) {
+			console.debug(
+				'[Adamantine Pick] Could not rerender Markdown view:',
+				error
+			);
+		}
+	});
+}
+	
 	onunload(): void {
 		console.debug('unloading adamantine pick plugin');
 		
@@ -466,16 +519,67 @@ async loadSettings(): Promise<void> {
 			return !document.body.classList.contains('theme-light');
 	}
 	
-	async saveSettings(): Promise<void>  {
-		
-		this.diagram_processor.render_type = this.settings.encoder_type;
-		this.diagram_processor.dark_mode = this.get_dark_mode_flag();
-		this.diagram_processor.dom_mark = this.settings.output_dom_mark;
-		this.diagram_processor.report = this.settings.output_diagram_stats;
-		this.diagram_processor.preserve_diagram_debug_print = this.settings.preserve_diagram_debug_print;
-	
-		await this.saveData(this.settings);
+async saveSettings(): Promise<void> {
+	if (!this.settings) {
+		return;
 	}
+
+	// Keep settings valid before applying them.
+	if (
+		!Number.isInteger(this.settings.encoder_type) ||
+		this.settings.encoder_type < 1 ||
+		this.settings.encoder_type > 3
+	) {
+		this.settings.encoder_type = 1;
+	}
+
+	if (
+		typeof this.settings.block_identify !== 'string' ||
+		!this.settings.block_identify.trim()
+	) {
+		this.settings.block_identify = 'pikchr';
+	}
+
+	if (
+		typeof this.settings.output_dom_mark !== 'string' ||
+		!this.settings.output_dom_mark.trim()
+	) {
+		this.settings.output_dom_mark = 'adamantine';
+	}
+
+	/*
+	 * Apply settings to the live renderer immediately.
+	 */
+	if (this.diagram_processor) {
+		this.diagram_processor.render_type =
+			this.settings.encoder_type;
+
+		this.diagram_processor.dark_mode =
+			this.get_dark_mode_flag();
+
+		this.diagram_processor.dom_mark =
+			this.settings.output_dom_mark;
+
+		this.diagram_processor.report =
+			this.settings.output_diagram_stats;
+
+		this.diagram_processor.preserve_diagram_debug_print =
+			this.settings.preserve_diagram_debug_print;
+
+		this.diagram_processor.update_dom_mark();
+	}
+
+	// Persist settings.
+	await this.saveData(this.settings);
+
+	/*
+	 * Re-render existing Markdown immediately.
+	 *
+	 * This is deliberately done AFTER saveData and after
+	 * updating the live processor.
+	 */
+	this.rerenderDiagrams();
+}
 	
 	private decode_base64(base64: string) {
 		const input_text = atob(base64);
@@ -766,10 +870,12 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.setName('Theme')
 			.setDesc('Bleach background for PDF export (printing)')
 			.addToggle(cb => {
-				cb.setValue(this.plugin.settings.bleach_diagram);
+				cb.setValue(!!this.plugin.settings.bleach_diagram);
+
 				cb.onChange(async (value: boolean) => {
-					console.debug('bleach diagram: ' + value);
 					this.plugin.settings.bleach_diagram = value;
+
+					// saveSettings() now applies + saves + rerenders.
 					await this.plugin.saveSettings();
 				});
 			});
