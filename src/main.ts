@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
+import { App, Plugin, PluginSettingTab, Setting, SettingDefinitionItem, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 /*
 	declare function require(name:string);
 	import factory = require("./pick.js");
@@ -381,10 +381,78 @@ export default class AdamantinePickPlugin extends Plugin {
 
 	
 	
-	async loadSettings(): Promise<void>  {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as AdamantinePickSettings);
+async loadSettings(): Promise<void> {
+	const saved = await this.loadData();
+
+	this.settings = {
+		...DEFAULT_SETTINGS,
+		...(saved && typeof saved === 'object' ? saved : {})
+	};
+
+	// Individual validation — do not wipe the entire settings object.
+	if (
+		typeof this.settings.block_identify !== 'string' ||
+		!this.settings.block_identify.trim()
+	) {
+		this.settings.block_identify = 'pikchr';
 	}
-	
+
+	if (
+		typeof this.settings.encoder_type !== 'number' ||
+		!Number.isInteger(this.settings.encoder_type) ||
+		this.settings.encoder_type < 1 ||
+		this.settings.encoder_type > 3
+	) {
+		this.settings.encoder_type = 1;
+	}
+
+	if (
+		typeof this.settings.output_dom_mark !== 'string' ||
+		!this.settings.output_dom_mark.trim()
+	) {
+		this.settings.output_dom_mark = 'adamantine';
+	}
+
+	if (typeof this.settings.bleach_diagram !== 'boolean') {
+		this.settings.bleach_diagram = false;
+	}
+
+	if (typeof this.settings.output_diagram_stats !== 'boolean') {
+		this.settings.output_diagram_stats = false;
+	}
+
+	if (typeof this.settings.preserve_diagram_debug_print !== 'boolean') {
+		this.settings.preserve_diagram_debug_print = true;
+	}
+
+	if (
+		typeof this.settings.sample_to_render !== 'number' ||
+		this.settings.sample_to_render < 1 ||
+		this.settings.sample_to_render > 4
+	) {
+		this.settings.sample_to_render = 4;
+	}
+
+	if (!Array.isArray(this.settings.samples_list)) {
+		this.settings.samples_list = [...DEFAULT_SETTINGS.samples_list];
+	}
+
+	if (typeof this.settings.samples_dir !== 'string') {
+		this.settings.samples_dir = DEFAULT_SETTINGS.samples_dir;
+	}
+
+	if (typeof this.settings.adamantine_dir !== 'string') {
+		this.settings.adamantine_dir =
+			DEFAULT_SETTINGS.adamantine_dir;
+	}
+
+	if (typeof this.settings.decode_locally !== 'boolean') {
+		this.settings.decode_locally =
+			DEFAULT_SETTINGS.decode_locally;
+	}
+
+	await this.saveData(this.settings);
+}
 	private get_dark_mode_flag() {
 		if (this.settings.bleach_diagram) return 0x0000;
 		return this.is_dark_mode() ? 0x0002 : 0x0000;
@@ -604,9 +672,7 @@ export default class AdamantinePickPlugin extends Plugin {
 	}	
 }
 
-import { App, PluginSettingTab, SettingDefinitionItem } from 'obsidian';
 
-import { App, PluginSettingTab, Setting } from 'obsidian';
 
 interface DropdownControl {
 	type: 'dropdown';
@@ -629,9 +695,6 @@ interface SettingDefinitionItem {
 	desc: string;
 	control: DropdownControl | ToggleControl | TextControl;
 }
-
-import { App, PluginSettingTab, Setting } from 'obsidian';
-
 
 interface DropdownControl {
 	type: 'dropdown';
@@ -716,14 +779,14 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			.setDesc('What Markdown code blocks to render (requires plugin reload)')
 			.addText(text => text
 				.setPlaceholder('pikchr pick')
-				.setValue(this.plugin.settings.block_identifier)
+				.setValue(this.plugin.settings.block_identify
 				.onChange(async (value) => {
 					let valid = value.split(" ")[0];
 					if (valid.length > 1024) {valid = "pikchr"; }
 					console.debug('md block id:' + valid);
-					this.plugin.settings.block_identifier = valid; 
+					this.plugin.settings.block_identify = valid; 
 					await this.plugin.saveSettings();
-				}));
+				})));
 		
 		new Setting(containerEl)
 			.setName('DOM class of output')
@@ -814,6 +877,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 					});
 				},
 			},
+			
 			{
 				name: 'Theme',
 				desc: 'Bleach background for PDF export (printing)',
@@ -827,7 +891,7 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
 				control: {
 					type: 'text',
-					key: 'block_identifier',
+					key: 'block_identify',
 					placeholder: 'pikchr',
 					validate: rejectSpaces,
 				}
