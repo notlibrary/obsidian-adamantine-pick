@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@types/node": "^16.11.6",
 		"esbuild": "^0.28.2",
-		"eslint": "^10.8.1",
+		"eslint": "^10.9.1",
 		"eslint-plugin-obsidianmd": "^0.4.1",
 		"obsidian": "latest",
 		"tslib": "2.4.0",
