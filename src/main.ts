@@ -543,6 +543,7 @@ async saveSettings(): Promise<void> {
 	 * This is deliberately done AFTER saveData and after
 	 * updating the live processor.
 	 */
+	 this.app.workspace.trigger('parse');
 }
 	
 	private decode_base64(base64: string) {
