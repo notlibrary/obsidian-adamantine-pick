@@ -1,3 +1,9 @@
+04-Sep 2026 0.5.8
+Adamantine Pick Plugin for Obsidian
+Maintenance release
+Fixed final linter warnings in plugin score card
+Fixed settings tab(changing some options still requires app restart)
+
 02-Sep 2026 0.5.7
 Adamantine Pick Plugin for Obsidian
 Second part of maintenance release(new contributor @benbatt)
