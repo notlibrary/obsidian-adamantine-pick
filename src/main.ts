@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, SettingDefinitionItem, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
+import { App, Plugin, PluginSettingTab, SettingDefinitionItem, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 /*
 	declare function require(name:string);
 	import factory = require("./pick.js");
