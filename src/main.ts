@@ -837,55 +837,99 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Theme',
 				desc: 'Bleach background for PDF export (printing)',
-				control: {
-					type: 'toggle',
-					key: 'bleach_diagram',
-				}
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.bleach_diagram);
+						toggle.onChange(async (value) => {
+							this.plugin.settings.bleach_diagram = value;
+							await this.plugin.saveSettings();
+						});
+					});
+				},
 			},
+
 			{
 				name: 'Markdown code block identifier',
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
-				control: {
-					type: 'text',
-					key: 'block_identify',
-					placeholder: 'pikchr',
-					validate: rejectSpaces,
-				}
+				render: (setting) => {
+					setting.addText(text => {
+						text.setPlaceholder('pikchr');
+						text.setValue(this.plugin.settings.block_identify);
+						text.onChange(async (value) => {
+							const err = rejectSpaces(value);
+							if (err) {
+								console.warn(err);
+								return;
+							}
+							this.plugin.settings.block_identify = value;
+							await this.plugin.saveSettings();
+						});
+					});
+				},
 			},
+
 			{
 				name: 'DOM class of output',
 				desc: 'Mark DOM class of pikchr output',
-				control: {
-					type: 'text',
-					key: 'output_dom_mark',
-					placeholder: 'adamantine',
-					validate: rejectSpaces,
+				render: (setting) => {
+					setting.addText(text => {
+						text.setPlaceholder('adamantine');
+						text.setValue(this.plugin.settings.output_dom_mark);
+						text.onChange(async (value) => {
+							const err = rejectSpaces(value);
+							if (err) {
+								console.warn(err);
+								return;
+							}
+							this.plugin.settings.output_dom_mark = value;
+							await this.plugin.saveSettings();
+						});
+					});
 				},
 			},
+
 			{
 				name: 'Preserve diagram debug print',
 				desc: 'Preserve inner diagram print calls that outputs lines before DOM SVG element',
-				control: {
-					type: 'toggle',
-					key: 'preserve_diagram_debug_print',
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.preserve_diagram_debug_print);
+						toggle.onChange(async (value) => {
+							this.plugin.settings.preserve_diagram_debug_print = value;
+							await this.plugin.saveSettings();
+						});
+					});
 				},
 			},
+
 			{
 				name: 'Report status message after diagram into note',
 				desc: 'Show height(px) width(px) size(byte) time(ms)',
-				control: {
-					type: 'toggle',
-					key: 'output_diagram_stats',
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.output_diagram_stats);
+						toggle.onChange(async (value) => {
+							this.plugin.settings.output_diagram_stats = value;
+							await this.plugin.saveSettings();
+						});
+					});
 				},
 			},
+
 			{
 				name: 'Use local adamantine diagram notes JSON',
 				desc: 'Load admantine-diagram-notes.json from plugin folder (for debug testing)',
-				control: {
-					type: 'toggle',
-					key: 'decode_locally',
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.decode_locally);
+						toggle.onChange(async (value) => {
+							this.plugin.settings.decode_locally = value;
+							await this.plugin.saveSettings();
+						});
+					});
 				},
 			},
+
 		];
 	}
 }
