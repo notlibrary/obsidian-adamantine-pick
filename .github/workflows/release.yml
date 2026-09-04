@@ -33,6 +33,7 @@ jobs:
           dog_tag=$(git tag --sort version:refname | tail -n 1)
           RELEASE_NOTES=$(sed -e '/^$/,$d' CHANGELOG | tail +2)
           npm install
+          npm install eslint@latest --save-dev
           npm run pick
           npm run build
           npm run notes
