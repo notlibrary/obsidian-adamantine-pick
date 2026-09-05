@@ -1,6 +1,6 @@
 ---
-tag: adamantine
----
+
+## tag: adamantine
 
 #adamantine
 
@@ -10,21 +10,24 @@ AI does not kill programming; it moves the scarce skill upward.
 
 The old loop was:
 
-    think -> type -> compile -> debug
+```
+think -> type -> compile -> debug
+```
 
 The new loop is closer to:
 
-    intent -> prompt -> inspect -> test -> verify
+```
+intent -> prompt -> inspect -> test -> verify
+```
 
 ```pikchr
-scale = 0.8
-A: box "human intent"
-B: box "ai generation"
-C: box "tests + review"
-D: box "software"
-A -> B -> C -> D
-C -> B "iterate"
-D -> A "feedback"
+box "human intent"
+arrow
+box "ai generation"
+arrow
+box "tests + review"
+arrow
+box "software"
 ```
 
 The durable programmer is therefore less a typist and more a
@@ -36,13 +39,11 @@ AI makes code cheaper. It does not make **judgment** cheap.
 ## the leverage shift
 
 ```pikchr
-scale = 0.75
-H: box "human" width 1.0
-J: box "judgment" width 1.2
-M: box "machine" width 1.0
-H -> J -> M
-M -> J "evidence"
-J -> H "decision"
+box "human"
+arrow
+box "judgment"
+arrow
+box "machine"
 ```
 
 Useful rule:
