@@ -841,17 +841,15 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Encoder',
 				desc: 'Render type',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addDropdown = settingInstance.addDropdown as (callback: (dd: Record<string, unknown>) => void) => void;
-					addDropdown((dropDown: Record<string, unknown>) => {
-						(dropDown.addOption as (key: string, label: string) => void)('1', 'SVG');
-						(dropDown.addOption as (key: string, label: string) => void)('2', 'Text');
-						(dropDown.addOption as (key: string, label: string) => void)('3', 'Dummy');
-						(dropDown.setValue as (value: string) => void)(this.plugin.settings.encoder_type.toString());
-						(dropDown.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) =>	{
+				render: (setting) => {
+					setting.addDropdown(dropDown => {
+						dropDown.addOption('1', 'SVG');
+						dropDown.addOption('2', 'Text');
+						dropDown.addOption('3', 'Dummy');
+						dropDown.setValue(this.plugin.settings.encoder_type.toString());
+						dropDown.onChange(async (value) =>	{
 							console.debug('render type: ' + value);
-							this.plugin.settings.encoder_type = parseInt(value, 10);
+							this.plugin.settings.encoder_type = parseInt(value);
 							await this.plugin.saveSettings();
 						});
 					});
@@ -860,18 +858,16 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Sample',
 				desc: 'Create once one builtin sample diagram note (requires plugin reload)',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addDropdown = settingInstance.addDropdown as (callback: (dd: Record<string, unknown>) => void) => void;
-					addDropdown((dropDown: Record<string, unknown>) => {
-						(dropDown.addOption as (key: string, label: string) => void)('1', 'Cheat sheet');
-						(dropDown.addOption as (key: string, label: string) => void)('2', 'Palindrome');
-						(dropDown.addOption as (key: string, label: string) => void)('3', 'Triforce');
-						(dropDown.addOption as (key: string, label: string) => void)('4', 'None');
-						(dropDown.setValue as (value: string) => void)(this.plugin.settings.sample_to_render.toString());
-						(dropDown.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) =>	{
+				render: (setting) => {
+					setting.addDropdown(dropDown => {
+						dropDown.addOption('1', 'Cheat sheet');
+						dropDown.addOption('2', 'Palindrome');
+						dropDown.addOption('3', 'Triforce');
+						dropDown.addOption('4', 'None');
+						dropDown.setValue(this.plugin.settings.sample_to_render.toString());
+						dropDown.onChange(async (value) =>	{
 							console.debug('render builtin sample: ' + value);
-							this.plugin.settings.sample_to_render = parseInt(value, 10);
+							this.plugin.settings.sample_to_render = parseInt(value);
 							await this.plugin.saveSettings();
 						});
 					});
@@ -881,12 +877,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Theme',
 				desc: 'Bleach background for PDF export (printing)',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
-					addToggle((toggle: Record<string, unknown>) => {
-						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.bleach_diagram);
-						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.bleach_diagram);
+						toggle.onChange(async (value) => {
 							this.plugin.settings.bleach_diagram = value;
 							await this.plugin.saveSettings();
 						});
@@ -897,13 +891,11 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Markdown code block identifier',
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addText = settingInstance.addText as (callback: (text: Record<string, unknown>) => void) => void;
-					addText((text: Record<string, unknown>) => {
-						(text.setPlaceholder as (value: string) => void)('Pikchr');
-						(text.setValue as (value: string) => void)(this.plugin.settings.block_identify);
-						(text.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) => {
+				render: (setting) => {
+					setting.addText(text => {
+						text.setPlaceholder('pikchr');
+						text.setValue(this.plugin.settings.block_identify);
+						text.onChange(async (value) => {
 							const err = rejectSpaces(value);
 							if (err) {
 								console.warn(err);
@@ -919,13 +911,11 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'DOM class of output',
 				desc: 'Mark DOM class of pikchr output',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addText = settingInstance.addText as (callback: (text: Record<string, unknown>) => void) => void;
-					addText((text: Record<string, unknown>) => {
-						(text.setPlaceholder as (value: string) => void)('Adamantine');
-						(text.setValue as (value: string) => void)(this.plugin.settings.output_dom_mark);
-						(text.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) => {
+				render: (setting) => {
+					setting.addText(text => {
+						text.setPlaceholder('adamantine');
+						text.setValue(this.plugin.settings.output_dom_mark);
+						text.onChange(async (value) => {
 							const err = rejectSpaces(value);
 							if (err) {
 								console.warn(err);
@@ -941,12 +931,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Preserve diagram debug print',
 				desc: 'Preserve inner diagram print calls that outputs lines before DOM SVG element',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
-					addToggle((toggle: Record<string, unknown>) => {
-						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.preserve_diagram_debug_print);
-						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.preserve_diagram_debug_print);
+						toggle.onChange(async (value) => {
 							this.plugin.settings.preserve_diagram_debug_print = value;
 							await this.plugin.saveSettings();
 						});
@@ -957,12 +945,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Report status message after diagram into note',
 				desc: 'Show height(px) width(px) size(byte) time(ms)',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
-					addToggle((toggle: Record<string, unknown>) => {
-						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.output_diagram_stats);
-						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.output_diagram_stats);
+						toggle.onChange(async (value) => {
 							this.plugin.settings.output_diagram_stats = value;
 							await this.plugin.saveSettings();
 						});
@@ -973,12 +959,10 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Use local adamantine diagram notes JSON',
 				desc: 'Load admantine-diagram-notes.json from plugin folder (for debug testing)',
-				render: (setting: SettingDefinitionItem) => {
-					const settingInstance = setting as Record<string, unknown>;
-					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
-					addToggle((toggle: Record<string, unknown>) => {
-						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.decode_locally);
-						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
+				render: (setting) => {
+					setting.addToggle(toggle => {
+						toggle.setValue(this.plugin.settings.decode_locally);
+						toggle.onChange(async (value) => {
 							this.plugin.settings.decode_locally = value;
 							await this.plugin.saveSettings();
 						});
