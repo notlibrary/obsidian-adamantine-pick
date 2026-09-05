@@ -15,7 +15,7 @@ declare module "obsidian" {
 
 export const import_env = {
     memoryBase: 0,
-    tableBase: 1024*32,
+    tableBase: 1024 * 32,
     memory: new WebAssembly.Memory({
       initial: 0
     }),
@@ -23,39 +23,70 @@ export const import_env = {
       initial: 0,
       element: 'anyfunc'
     })
-  } 
+};
 
 /* Some glue meh */
 export const textEncoder = new TextEncoder();
-export const textDecoder = new TextDecoder('utf8');
-export const createCString = (module, str) => {
+export const textDecoder = new TextDecoder('utf-8');
+
+interface PikchrExports extends WebAssembly.Exports {
+    malloc(size: number): number;
+    free(address: number): void;
+    pick: (/* типы аргументов, если известны */) => unknown;
+    pick_height: (/* типы аргументов */) => number;
+    pick_width: (/* типы аргументов */) => number;
+    pick_version: (/* типы аргументов */) => number;
+    memory?: WebAssembly.Memory;
+}
+
+
+interface WasmModule {
+    instance: {
+        exports: PikchrExports;
+    };
+}
+
+export const createCString = (module: WasmModule, str: string): number => {
     const nullTerminatedString = str + "\0";
     const encodedString = textEncoder.encode(nullTerminatedString);
-    const address = module.instance.exports.malloc(encodedString.length);
     
+    const { exports } = module.instance;
+    const address = exports.malloc(encodedString.length);
+    
+	
+    const memoryBuffer = (exports.memory || import_env.memory).buffer;
+
     try {
-        const destination = new Uint8Array(module.instance.exports.memory.buffer, address, encodedString.length);
+        const destination = new Uint8Array(memoryBuffer, address, encodedString.length);
         destination.set(encodedString);
-    } catch (error) {
-        module.instance.exports.free(address); 
+    } catch (error: unknown) {
+        exports.free(address); 
         throw error;
     }
 
     return address;
 };
-export const readStaticCString = (module, address) => {
-		const buffer = module.instance.exports.memory.buffer;
-		const encodedStringLength = (new Uint8Array(buffer, address)).indexOf(0);
-		const encodedStringBuffer = new Uint8Array(buffer, address, encodedStringLength);
-		return textDecoder.decode(encodedStringBuffer);
-	};
-export const receiveCString = (module, address) => {
-		try {
-			return readStaticCString(module, address);
-		} finally {
-			module.instance.exports.free(address);
-		}
-	};
+
+
+export const readStaticCString = (module: WasmModule, address: number): string => {
+   
+    const memoryBuffer = (module.instance.exports.memory || import_env.memory).buffer;
+    
+    
+    const encodedStringLength = (new Uint8Array(memoryBuffer, address)).indexOf(0);
+    const encodedStringBuffer = new Uint8Array(memoryBuffer, address, encodedStringLength);
+    
+    return textDecoder.decode(encodedStringBuffer);
+};
+
+
+export const receiveCString = (module: WasmModule, address: number): string => {
+    try {
+        return readStaticCString(module, address);
+    } finally {
+        module.instance.exports.free(address);
+    }
+};
 
 export interface AdamantinePickSettings {
 	block_identify: string; 
@@ -140,13 +171,19 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_height = 0;
 		this.diagram_width = 0;
 		this.prepend = "";
-		WebAssembly.instantiate(wasmbin, import_env).then( (factory) => {
-				this.pikchr = factory.instance.exports.pick;
-				this.get_height = factory.instance.exports.pick_height;
-				this.get_width = factory.instance.exports.pick_width;
-				this.get_artifact_version = factory.instance.exports.pick_version;
-				this.factory = factory;
-				this.dom_class_ptr = createCString(this.factory, this.dom_mark);
+		WebAssembly.instantiate<PikchrExports>(wasmbin, import_env).then((factory) => {
+			// Теперь factory автоматически имеет правильный тип WebAssembly.WebAssemblyInstantiatedSource<PikchrExports>
+			
+			this.pikchr = factory.instance.exports.pick;
+			this.get_height = factory.instance.exports.pick_height;
+			this.get_width = factory.instance.exports.pick_width;
+			this.get_artifact_version = factory.instance.exports.pick_version;
+			
+			// Передаем factory напрямую, без опасных as-приведений
+			this.factory = factory; 
+			
+			this.dom_class_ptr = createCString(factory, this.dom_mark);
+
 			})
 			.catch((error) => {
 				console.error(error);
