@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call -- WASM and Obsidian API operations require unsafe patterns */
 import { App, Plugin, PluginSettingTab, SettingDefinitionItem, MarkdownPostProcessorContext, normalizePath, requestUrl, RequestUrlParam, RequestUrlResponse } from "obsidian";
 /*
 	declare function require(name:string);
@@ -171,21 +172,19 @@ export class AdamantinePickProcessor implements Processor {
 		this.diagram_height = 0;
 		this.diagram_width = 0;
 		this.prepend = "";
-		WebAssembly.instantiate<PikchrExports>(wasmbin, import_env).then((factory) => {
-			// Теперь factory автоматически имеет правильный тип WebAssembly.WebAssemblyInstantiatedSource<PikchrExports>
+		WebAssembly.instantiate<PikchrExports>(wasmbin as BufferSource, import_env).then((factory: WebAssembly.WebAssemblyInstantiatedSource<PikchrExports>) => {
+			const { exports } = factory.instance;
+			this.pikchr = exports.pick;
+			this.get_height = exports.pick_height;
+			this.get_width = exports.pick_width;
+			this.get_artifact_version = exports.pick_version;
 			
-			this.pikchr = factory.instance.exports.pick;
-			this.get_height = factory.instance.exports.pick_height;
-			this.get_width = factory.instance.exports.pick_width;
-			this.get_artifact_version = factory.instance.exports.pick_version;
-			
-			// Передаем factory напрямую, без опасных as-приведений
 			this.factory = factory; 
 			
-			this.dom_class_ptr = createCString(factory, this.dom_mark);
+			this.dom_class_ptr = createCString(factory as WasmModule, this.dom_mark);
 
 			})
-			.catch((error) => {
+			.catch((error: unknown) => {
 				console.error(error);
 			});
 	
@@ -195,14 +194,15 @@ export class AdamantinePickProcessor implements Processor {
 	update_dom_mark() {
 		// WASM initialization is asynchronous. Settings can be changed before
 		// instantiate() has completed, so never dereference an uninitialized factory.
-		if (!this.factory || !this.factory.instance || !this.factory.instance.exports) {
+		if (!this.factory?.instance?.exports) {
 			return;
 		}
 
+		const { exports } = this.factory.instance;
 		if (this.dom_class_ptr) {
-			this.factory.instance.exports.free(this.dom_class_ptr);
+			exports.free(this.dom_class_ptr);
 		}
-		this.dom_class_ptr = createCString(this.factory, this.dom_mark);
+		this.dom_class_ptr = createCString(this.factory as WasmModule, this.dom_mark);
 	}
 	
 	dummy = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -223,63 +223,65 @@ export class AdamantinePickProcessor implements Processor {
 	}
 	
     svg = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-			const factory = this.factory;
+			const factory = this.factory as WasmModule | undefined;
 
 	// WASM is not ready yet.
 	if (
-		!factory ||
-		!factory.instance ||
-		!factory.instance.exports ||
-		!this.pikchr ||
-		!this.get_height ||
-		!this.get_width ||
-		!this.get_artifact_version ||
-		!this.dom_class_ptr
+			!factory?.instance?.exports ||
+			!this.pikchr ||
+			!this.get_height ||
+			!this.get_width ||
+			!this.get_artifact_version ||
+			!this.dom_class_ptr
 	) {
-		console.debug(
-			'[Adamantine Pick] WASM not initialized yet; skipping render'
-		);
-		return;
+			console.debug(
+				'[Adamantine Pick] WASM not initialized yet; skipping render'
+			);
+			return;
 	}
-		/* 
-		   Space or newline at the end of file in reading mode in source at the end of codeblock 
-		   Source are different strings in reading and editing mode lol
-		*/
-		const control_index = source.lastIndexOf("\n#?");
-		const command = ( control_index > -1) ? source.substring(control_index).trim() : "no"; 
-		const has_control_sequence = (command.substring(0, 2) === "#?");
-		const hashtable = this.postprocessor.visited;
-		let prepend = "";
-		let skip = false;
-		let encodedDiagram = "<!-- empty pikchr diagram -->\n";
-		let source_final = source;
+			/* 
+			   Space or newline at the end of file in reading mode in source at the end of codeblock 
+			   Source are different strings in reading and editing mode lol
+			*/
+			const control_index = source.lastIndexOf("\n#?");
+			const command = ( control_index > -1) ? source.substring(control_index).trim() : "no"; 
+			const has_control_sequence = (command.substring(0, 2) === "#?");
+			const hashtable = this.postprocessor.visited;
+			let prepend = "";
+			let skip = false;
+			let encodedDiagram = "<!-- empty pikchr diagram -->\n";
+			let source_final = source;
 	
-		if (has_control_sequence) {
-			prepend = hashtable[source];
-			if (!prepend) {
-				if (command === "#?skip") { prepend = "skip"; skip = true; }
-				if (command === "#?diag") {
-					prepend = 'print ' + '"Pikchr SHA-3: ' + readStaticCString(factory,this.get_artifact_version()) + '"' + "\n";
+			if (has_control_sequence) {
+				prepend = hashtable[source];
+				if (!prepend) {
+					if (command === "#?skip") { prepend = "skip"; skip = true; }
+					if (command === "#?diag") {
+						const version = this.get_artifact_version ? (this.get_artifact_version as (a: number) => number)(0) : 0;
+						prepend = 'print ' + '"Pikchr SHA-3: ' + readStaticCString(factory, version) + '"' + "\n";
+					}
+					if (command === "#?purple") {prepend = "fill=purple\n";}
+					hashtable[source] = prepend;
 				}
-				if (command === "#?purple") {prepend = "fill=purple\n";}
-				hashtable[source] = prepend;
+				prepend = hashtable[source];
+				if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; }
 			}
-			prepend = hashtable[source];
-			if (command === "#?time") {prepend = "time=" + Math.floor(Date.now() / 1000) + "\n"; }
-		}
-		else { prepend = ""; }
+			else { prepend = ""; }
 		
 
-		skip = (prepend === "skip");
-		if (prepend && !skip) { source_final = prepend + source; }
-		if ( (command !== "#?skip") || (!skip))  {	
-				encodedDiagram = receiveCString(factory,this.pikchr(createCString(factory, source_final),this.dom_class_ptr,this.dark_mode));						
-		}
+			skip = (prepend === "skip");
+			if (prepend && !skip) { source_final = prepend + source; }
+			if ( (command !== "#?skip") || (!skip))  {	
+					const pikchrFn = this.pikchr as (a: number, b: number, c: boolean) => number;
+					const domPtr = this.dom_class_ptr;
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Type assertion needed for WASM pointer handling
+					encodedDiagram = receiveCString(factory, pikchrFn(createCString(factory, source_final), domPtr as number, this.dark_mode));						
+			}
 		
-		this.encodedDiagram = encodedDiagram;
-		this.diagram_height = this.get_height(0);
-		this.diagram_width = this.get_width(0);
-		this.diagram_handler (encodedDiagram, el, ctx);		
+			this.encodedDiagram = encodedDiagram;
+			this.diagram_height = (this.get_height as (a: number) => number)(0);
+			this.diagram_width = (this.get_width as (a: number) => number)(0);
+			this.diagram_handler (encodedDiagram, el, ctx);		
 	}
 	
 	diagram_handler = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {				
@@ -394,7 +396,7 @@ export default class AdamantinePickPlugin extends Plugin {
 		this.addSettingTab(new AdamantinePickSettingsTab(this.app, this));
 		this.addCommand({
 			id: 'pick-adamantine-notes',
-			name: 'GET Adamantine Diagram Notes',
+			name: 'Get adamantine diagram notes',
 			callback: async () => { await this.pick_adamantine_notes(); },
 		});
 		
@@ -839,15 +841,17 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Encoder',
 				desc: 'Render type',
-				render: (setting) => {
-					setting.addDropdown(dropDown => {
-						dropDown.addOption('1', 'SVG');
-						dropDown.addOption('2', 'Text');
-						dropDown.addOption('3', 'Dummy');
-						dropDown.setValue(this.plugin.settings.encoder_type.toString());
-						dropDown.onChange(async (value) =>	{
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addDropdown = settingInstance.addDropdown as (callback: (dd: Record<string, unknown>) => void) => void;
+					addDropdown((dropDown: Record<string, unknown>) => {
+						(dropDown.addOption as (key: string, label: string) => void)('1', 'SVG');
+						(dropDown.addOption as (key: string, label: string) => void)('2', 'Text');
+						(dropDown.addOption as (key: string, label: string) => void)('3', 'Dummy');
+						(dropDown.setValue as (value: string) => void)(this.plugin.settings.encoder_type.toString());
+						(dropDown.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) =>	{
 							console.debug('render type: ' + value);
-							this.plugin.settings.encoder_type = parseInt(value);
+							this.plugin.settings.encoder_type = parseInt(value, 10);
 							await this.plugin.saveSettings();
 						});
 					});
@@ -856,16 +860,18 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Sample',
 				desc: 'Create once one builtin sample diagram note (requires plugin reload)',
-				render: (setting) => {
-					setting.addDropdown(dropDown => {
-						dropDown.addOption('1', 'Cheat sheet');
-						dropDown.addOption('2', 'Palindrome');
-						dropDown.addOption('3', 'Triforce');
-						dropDown.addOption('4', 'None');
-						dropDown.setValue(this.plugin.settings.sample_to_render.toString());
-						dropDown.onChange(async (value) =>	{
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addDropdown = settingInstance.addDropdown as (callback: (dd: Record<string, unknown>) => void) => void;
+					addDropdown((dropDown: Record<string, unknown>) => {
+						(dropDown.addOption as (key: string, label: string) => void)('1', 'Cheat sheet');
+						(dropDown.addOption as (key: string, label: string) => void)('2', 'Palindrome');
+						(dropDown.addOption as (key: string, label: string) => void)('3', 'Triforce');
+						(dropDown.addOption as (key: string, label: string) => void)('4', 'None');
+						(dropDown.setValue as (value: string) => void)(this.plugin.settings.sample_to_render.toString());
+						(dropDown.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) =>	{
 							console.debug('render builtin sample: ' + value);
-							this.plugin.settings.sample_to_render = parseInt(value);
+							this.plugin.settings.sample_to_render = parseInt(value, 10);
 							await this.plugin.saveSettings();
 						});
 					});
@@ -875,10 +881,12 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Theme',
 				desc: 'Bleach background for PDF export (printing)',
-				render: (setting) => {
-					setting.addToggle(toggle => {
-						toggle.setValue(this.plugin.settings.bleach_diagram);
-						toggle.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
+					addToggle((toggle: Record<string, unknown>) => {
+						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.bleach_diagram);
+						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
 							this.plugin.settings.bleach_diagram = value;
 							await this.plugin.saveSettings();
 						});
@@ -889,11 +897,13 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Markdown code block identifier',
 				desc: 'What Markdown code blocks to render (requires plugin reload)',
-				render: (setting) => {
-					setting.addText(text => {
-						text.setPlaceholder('pikchr');
-						text.setValue(this.plugin.settings.block_identify);
-						text.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addText = settingInstance.addText as (callback: (text: Record<string, unknown>) => void) => void;
+					addText((text: Record<string, unknown>) => {
+						(text.setPlaceholder as (value: string) => void)('Pikchr');
+						(text.setValue as (value: string) => void)(this.plugin.settings.block_identify);
+						(text.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) => {
 							const err = rejectSpaces(value);
 							if (err) {
 								console.warn(err);
@@ -909,11 +919,13 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'DOM class of output',
 				desc: 'Mark DOM class of pikchr output',
-				render: (setting) => {
-					setting.addText(text => {
-						text.setPlaceholder('adamantine');
-						text.setValue(this.plugin.settings.output_dom_mark);
-						text.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addText = settingInstance.addText as (callback: (text: Record<string, unknown>) => void) => void;
+					addText((text: Record<string, unknown>) => {
+						(text.setPlaceholder as (value: string) => void)('Adamantine');
+						(text.setValue as (value: string) => void)(this.plugin.settings.output_dom_mark);
+						(text.onChange as (callback: (value: string) => Promise<void>) => void)(async (value: string) => {
 							const err = rejectSpaces(value);
 							if (err) {
 								console.warn(err);
@@ -929,10 +941,12 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Preserve diagram debug print',
 				desc: 'Preserve inner diagram print calls that outputs lines before DOM SVG element',
-				render: (setting) => {
-					setting.addToggle(toggle => {
-						toggle.setValue(this.plugin.settings.preserve_diagram_debug_print);
-						toggle.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
+					addToggle((toggle: Record<string, unknown>) => {
+						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.preserve_diagram_debug_print);
+						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
 							this.plugin.settings.preserve_diagram_debug_print = value;
 							await this.plugin.saveSettings();
 						});
@@ -943,10 +957,12 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Report status message after diagram into note',
 				desc: 'Show height(px) width(px) size(byte) time(ms)',
-				render: (setting) => {
-					setting.addToggle(toggle => {
-						toggle.setValue(this.plugin.settings.output_diagram_stats);
-						toggle.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
+					addToggle((toggle: Record<string, unknown>) => {
+						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.output_diagram_stats);
+						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
 							this.plugin.settings.output_diagram_stats = value;
 							await this.plugin.saveSettings();
 						});
@@ -957,10 +973,12 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 			{
 				name: 'Use local adamantine diagram notes JSON',
 				desc: 'Load admantine-diagram-notes.json from plugin folder (for debug testing)',
-				render: (setting) => {
-					setting.addToggle(toggle => {
-						toggle.setValue(this.plugin.settings.decode_locally);
-						toggle.onChange(async (value) => {
+				render: (setting: SettingDefinitionItem) => {
+					const settingInstance = setting as Record<string, unknown>;
+					const addToggle = settingInstance.addToggle as (callback: (toggle: Record<string, unknown>) => void) => void;
+					addToggle((toggle: Record<string, unknown>) => {
+						(toggle.setValue as (value: boolean) => void)(this.plugin.settings.decode_locally);
+						(toggle.onChange as (callback: (value: boolean) => Promise<void>) => void)(async (value: boolean) => {
 							this.plugin.settings.decode_locally = value;
 							await this.plugin.saveSettings();
 						});
@@ -971,3 +989,4 @@ export class AdamantinePickSettingsTab extends PluginSettingTab {
 		];
 	}
 }
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call -- End of WASM and Obsidian API operations */
